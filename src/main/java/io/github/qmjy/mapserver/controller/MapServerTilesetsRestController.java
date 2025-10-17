@@ -269,7 +269,7 @@ public class MapServerTilesetsRestController {
             Optional<byte[]> optionalRes = getBytesFromSqlite(tileset, z, x, y, null);
             if (optionalRes.isPresent()) {
                 byte[] bytes = optionalRes.get();
-                return wrapResponse(bytes, AppConfig.APPLICATION_X_PROTOBUF_VALUE);
+                return wrapResponse(bytes, MediaType.APPLICATION_PROTOBUF);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -283,7 +283,7 @@ public class MapServerTilesetsRestController {
             if (pbfFile.exists()) {
                 try {
                     byte[] buffer = FileCopyUtils.copyToByteArray(pbfFile);
-                    return wrapResponse(IOUtils.decompress(buffer), AppConfig.APPLICATION_X_PROTOBUF_VALUE);
+                    return wrapResponse(IOUtils.decompress(buffer), MediaType.APPLICATION_PROTOBUF);
                 } catch (IOException e) {
                     return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }

@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
@@ -79,7 +80,7 @@ public class MapServerFontsController {
                 File file = new File(fileName);
                 byte[] buffer = FileCopyUtils.copyToByteArray(file);
                 HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(AppConfig.APPLICATION_X_PROTOBUF_VALUE);
+                headers.setContentType(MediaType.APPLICATION_PROTOBUF);
                 ByteArrayResource resource = new ByteArrayResource(buffer);
                 return ResponseEntity.ok().headers(headers).contentLength(buffer.length).body(resource);
             } catch (IOException e) {
@@ -91,7 +92,7 @@ public class MapServerFontsController {
                 try {
                     byte[] buffer = inputStream.readAllBytes();
                     HttpHeaders headers = new HttpHeaders();
-                    headers.setContentType(AppConfig.APPLICATION_X_PROTOBUF_VALUE);
+                    headers.setContentType(MediaType.APPLICATION_PROTOBUF);
                     ByteArrayResource resource = new ByteArrayResource(buffer);
                     return ResponseEntity.ok().headers(headers).contentLength(buffer.length).body(resource);
                 } catch (IOException e) {
