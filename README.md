@@ -2,8 +2,8 @@
 
 ![青罗地图](./logo_320x320.png)
 
-出处：“青罗”化用韩愈诗句“江作青罗带，山如碧玉簪”，描绘山水之美。
-寓意：将蜿蜒的江河道路比作“青罗带”，非常形象地描绘了地图上的线性要素，名字清新雅致，富有艺术感。
+> 出处：“青罗”化用韩愈诗句“江作青罗带，山如碧玉簪”，描绘山水之美。  
+> 寓意：将蜿蜒的江河道路比作“青罗带”，非常形象地描绘了地图上的线性要素，名字清新雅致，富有艺术感。
 
 青罗地图旨在提供地图服务能力，为私有化地图部署提供解决方案。  
 项目主要支持mbtiles、tpk格式的地图数据，其他支持的数据格式如下所示，其他的需要转换成mbtiles后使用。  
@@ -35,13 +35,13 @@
 假设您已经安装完成git、JDK21、Maven程序并设置好了环境变量。
 
 ```bash
-git clone git@github.com:qmjy/mapbox-offline-server.git
+git clone git@github.com:qmjy/Chilo.git
 ```
 
 进入到代码目录执行命令编码源码：
 
 ```bash
-cd mapbox-offline-server
+cd Chilo
 mvn clean package
 ```
 
@@ -49,7 +49,7 @@ mvn clean package
 
 ```bash
 cd target
-java -jar mapbox-offline-server-xxx.jar --dataPath="your data path"
+java -jar Chilo-xxx.jar --dataPath="your data path"
 ```
 
 ## 资源结构

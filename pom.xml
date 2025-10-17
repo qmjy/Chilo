@@ -12,12 +12,12 @@
     </parent>
 
     <groupId>io.github.qmjy</groupId>
-    <artifactId>map-offline-server</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <artifactId>chilo</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>Mapbox GL offline server with java.</description>
-    <url>https://github.com/qmjy/mapbox-offline-server</url>
+    <url>https://github.com/qmjy/Chilo</url>
 
     <!-- license -->
     <licenses>
@@ -29,15 +29,15 @@
 
     <!-- scm -->
     <scm>
-        <connection>scm:git:git@github.com:qmjy/mapbox-offline-server.git</connection>
-        <developerConnection>scm:git:git@github.com:qmjy/mapbox-offline-server.git</developerConnection>
-        <url>git@github.com:qmjy/mapbox-offline-server.git</url>
+        <connection>scm:git:git@github.com:qmjy/Chilo.git</connection>
+        <developerConnection>scm:git:git@github.com:qmjy/Chilo.git</developerConnection>
+        <url>git@github.com:qmjy/Chilo.git</url>
     </scm>
 
     <!-- issue -->
     <issueManagement>
         <system>Github Issue</system>
-        <url>https://github.com/qmjy/mapbox-offline-server/issues</url>
+        <url>https://github.com/qmjy/Chilo/issues</url>
     </issueManagement>
 
     <!-- developers -->
