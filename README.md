@@ -28,7 +28,7 @@
 6. 支持图片像素坐标到地理经纬度坐标的地理信息校准（图片投影到地图上）；
 7. 新增地图工具：获取中心点坐标，瓦片网格等；
 
-其他定制需求可通过提交[issue](https://github.com/qmjy/mapbox-offline-server/issues)，欢迎反馈。
+其他定制需求可通过提交[issue](https://github.com/qmjy/Chilo/issues)，欢迎反馈。
 
 ## 安装启动程序
 
@@ -111,7 +111,7 @@ data
 
 ### 资源下载
 
-数据获取可通过[issue](https://github.com/qmjy/mapbox-offline-server/issues)反馈需求并留下联系方式，已经支持的数据服务地址，请参考[WIKI](https://github.com/qmjy/mapbox-offline-server/wiki)介绍。
+数据获取可通过[issue](https://github.com/qmjy/Chilo/issues)反馈需求并留下联系方式，已经支持的数据服务地址，请参考[WIKI](https://github.com/qmjy/Chilo/wiki)介绍。
 
 ### 社交媒体
 QQ群：[1005408393](https://qm.qq.com/q/12A9qSA33U)

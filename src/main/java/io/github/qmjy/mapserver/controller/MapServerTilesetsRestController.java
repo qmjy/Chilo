@@ -485,7 +485,7 @@ public class MapServerTilesetsRestController {
         Font subtitleFont = new Font("Arial", Font.PLAIN, 10);
         g2d.setFont(subtitleFont);
 
-        String subtitle = "https://github.com/qmjy/mapbox-offline-server";
+        String subtitle = "https://github.com/qmjy/Chilo";
         int subtitleWidth = g2d.getFontMetrics().stringWidth(subtitle);
         int subtitleX = (width - subtitleWidth) / 2;
         int subtitleY = y + textHeight;
