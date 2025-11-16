@@ -84,7 +84,7 @@
                 tr.appendChild(td6);
 
                 const td7 = document.createElement('td');
-                td7.textContent = `/tilesets/${key}/{z}/{x}/{y}.` + (result.data[key] == null ? "" : result.data[key].metaDataMap['format'])
+                td7.textContent = `/tilesets/${key}/{z}/{x}/{y}.` + (result.data[key] == null ? "" : result.data[key]['format'])
                 tr.appendChild(td7);
 
                 table.appendChild(tr);

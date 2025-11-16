@@ -83,8 +83,8 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
 
     private void wrapMapFile(File dataFolder) {
         File tilesetsFolder = new File(dataFolder, "tilesets");
-        searchMbtiles(tilesetsFolder);
-        searchTpk(tilesetsFolder);
+        searchTilesOfMbtiles(tilesetsFolder);
+        searchTileOfTpk(tilesetsFolder);
         searchShapefile(tilesetsFolder);
         MapServerDataCenter.getInstance().setInitialized(true);
     }
@@ -100,7 +100,7 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
     }
 
 
-    private void searchTpk(File tilesetsFolder) {
+    private void searchTileOfTpk(File tilesetsFolder) {
         //TODO VTPK待解析
         File[] files = tilesetsFolder.listFiles(pathname -> pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_TPK));
         if (files != null) {
@@ -110,13 +110,17 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
         }
     }
 
-    private void searchMbtiles(File tilesetsFolder) {
-        File[] files = tilesetsFolder.listFiles(pathname -> pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_MBTILES));
+    private void searchTilesOfMbtiles(File tilesetsFolder) {
+        File[] files = tilesetsFolder.listFiles(pathname -> pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_MBTILES) || pathname.isDirectory());
         if (files != null) {
-            for (File dbFile : files) {
-                MapServerDataCenter.getInstance().initJdbcTemplate(appConfig.getDriverClassName(), dbFile);
-                if (appConfig.isEnablePoiExtractMvt()) {
-                    asyncService.asyncMbtilesToPOI(dbFile);
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    MapServerDataCenter.getInstance().initTilesOfDir(file);
+                } else {
+                    MapServerDataCenter.getInstance().initJdbcTemplate(appConfig.getDriverClassName(), file);
+                    if (appConfig.isEnablePoiExtractMvt()) {
+                        asyncService.asyncMbtilesToPOI(file);
+                    }
                 }
             }
         }

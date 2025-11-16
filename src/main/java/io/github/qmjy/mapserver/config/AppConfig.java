@@ -45,6 +45,7 @@ public class AppConfig {
     public static final String FILE_EXTENSION_NAME_LPK = ".lpk";
     public static final String FILE_EXTENSION_NAME_SHP = ".shp";
     public static final String FILE_EXTENSION_NAME_PBF = ".pbf";
+    public static final String FILE_EXTENSION_NAME_MVT = ".mvt";
     public static final String FILE_EXTENSION_NAME_OSM_PBF = ".osm.pbf";
     public static final String FILE_EXTENSION_NAME_JSON = ".json";
     public static final String FILE_EXTENSION_NAME_GEOJSON = ".geojson";

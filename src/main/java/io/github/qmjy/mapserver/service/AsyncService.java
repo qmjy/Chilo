@@ -136,7 +136,7 @@ public class AsyncService {
                 JdbcTemplate idxJdbcTemp = JdbcUtils.getInstance().getJdbcTemplate(appConfig.getDriverClassName(), idxFilePath);
                 idxJdbcTemp.execute("CREATE TABLE poi(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, tile_row INTEGER NOT NULL, tile_column INTEGER NOT NULL, zoom_level INTEGER NOT NULL, geometry TEXT NOT NULL, geometry_type INTEGER NOT NULL);");
 
-                TilesFileModel tilesFileModel = mapServerDataCenter.getTilesFileModel(tilesetFile.getName());
+                AbstractTile tilesFileModel = mapServerDataCenter.getTilesFileModel(tilesetFile.getName());
                 tilesFileModel.countSize();
                 extractPoi2Idx(tilesFileModel, idxJdbcTemp);
                 JdbcUtils.getInstance().releaseJdbcTemplate(idxJdbcTemp);
@@ -144,28 +144,30 @@ public class AsyncService {
         }
     }
 
-    private void extractPoi2Idx(TilesFileModel tilesFileModel, JdbcTemplate idxJdbcTemp) {
+    private void extractPoi2Idx(AbstractTile tilesFileModel, JdbcTemplate idxJdbcTemp) {
         //只从最高层级解析POI数据
         String maxZoom = (String) tilesFileModel.getMetaDataMap().get("maxzoom");
-        JdbcTemplate jdbcTemplate = tilesFileModel.getJdbcTemplate();
+        if (tilesFileModel instanceof TileOfMbtiles tileModel) {
+            JdbcTemplate jdbcTemplate = tileModel.getJdbcTemplate();
 
-        int pageSize = 5000;
-        List<PoiCache> cache = new ArrayList<>();
+            int pageSize = 5000;
+            List<PoiCache> cache = new ArrayList<>();
 
-        long totalPage = tilesFileModel.getTilesCount() % pageSize == 0 ? tilesFileModel.getTilesCount() / pageSize : tilesFileModel.getTilesCount() / pageSize + 1;
-        for (long currentPage = 0; currentPage < totalPage; currentPage++) {
-            List<Map<String, Object>> dataList = jdbcTemplate.queryForList("SELECT * FROM tiles WHERE zoom_level = '" + maxZoom + "' LIMIT " + pageSize + " OFFSET " + currentPage * pageSize);
-            for (Map<String, Object> rowDataMap : dataList) {
-                byte[] data = (byte[]) rowDataMap.get("tile_data");
-                List<PoiCache> poiList = extractPoi((int) rowDataMap.get("tile_row"), (int) rowDataMap.get("tile_column"), (int) rowDataMap.get("zoom_level"), tilesFileModel.isCompressed() ? IOUtils.decompress(data) : data);
-                cache.addAll(poiList);
-                if (cache.size() > pageSize) {
-                    batchUpdate(idxJdbcTemp, cache);
-                    cache.clear();
+            long totalPage = tilesFileModel.getTilesCount() % pageSize == 0 ? tilesFileModel.getTilesCount() / pageSize : tilesFileModel.getTilesCount() / pageSize + 1;
+            for (long currentPage = 0; currentPage < totalPage; currentPage++) {
+                List<Map<String, Object>> dataList = jdbcTemplate.queryForList("SELECT * FROM tiles WHERE zoom_level = '" + maxZoom + "' LIMIT " + pageSize + " OFFSET " + currentPage * pageSize);
+                for (Map<String, Object> rowDataMap : dataList) {
+                    byte[] data = (byte[]) rowDataMap.get("tile_data");
+                    List<PoiCache> poiList = extractPoi((int) rowDataMap.get("tile_row"), (int) rowDataMap.get("tile_column"), (int) rowDataMap.get("zoom_level"), tilesFileModel.isCompressed() ? IOUtils.unGzip(data) : data);
+                    cache.addAll(poiList);
+                    if (cache.size() > pageSize) {
+                        batchUpdate(idxJdbcTemp, cache);
+                        cache.clear();
+                    }
                 }
             }
+            batchUpdate(idxJdbcTemp, cache);
         }
-        batchUpdate(idxJdbcTemp, cache);
     }
 
     private static void batchUpdate(JdbcTemplate idxJdbcTemp, List<PoiCache> poiList) {

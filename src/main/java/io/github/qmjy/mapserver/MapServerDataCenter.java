@@ -19,9 +19,7 @@ package io.github.qmjy.mapserver;
 import com.graphhopper.GraphHopper;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.qmjy.mapserver.config.AppConfig;
-import io.github.qmjy.mapserver.model.AdministrativeDivisionNode;
-import io.github.qmjy.mapserver.model.FontsFileModel;
-import io.github.qmjy.mapserver.model.TilesFileModel;
+import io.github.qmjy.mapserver.model.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.geotools.api.data.FileDataStore;
@@ -39,12 +37,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.sql.DataSource;
-import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.List;
 
 /**
  * 地图数据库服务工具
@@ -60,7 +56,7 @@ public class MapServerDataCenter {
      * 瓦片数据库文件模型
      */
     @Getter
-    private final Map<String, TilesFileModel> tilesMap = new HashMap<>();
+    private final Map<String, AbstractTile> tilesMap = new HashMap<>();
     /**
      * 不会再被加载的文件列表
      */
@@ -123,9 +119,19 @@ public class MapServerDataCenter {
     public void initJdbcTemplate(String className, File mbtiles) {
         if (!tilesMap.containsKey(mbtiles.getName())) {
             logger.info("Try to load tile of mbtiles: {}", mbtiles.getName());
-            TilesFileModel dbFileModel = new TilesFileModel(mbtiles, className);
+            TileOfMbtiles dbFileModel = new TileOfMbtiles(mbtiles, className);
             if (dbFileModel.isValid()) {
                 tilesMap.put(mbtiles.getName(), dbFileModel);
+            }
+        }
+    }
+
+    public void initTilesOfDir(File file) {
+        if (!tilesMap.containsKey(file.getName())) {
+            logger.info("Try to load tile from folder: {}", file.getName());
+            TileOfDir dbFileModel = new TileOfDir(file);
+            if (dbFileModel.isValid()) {
+                tilesMap.put(file.getName(), dbFileModel);
             }
         }
     }
@@ -138,7 +144,7 @@ public class MapServerDataCenter {
     public void indexTpk(File tpk) {
         if (!tilesMap.containsKey(tpk.getName()) && !blockedTiles.contains(tpk.getName())) {
             logger.info("Try to load tile of tpk: {}", tpk.getName());
-            TilesFileModel dbFileModel = new TilesFileModel(tpk);
+            TileOfTpk dbFileModel = new TileOfTpk(tpk);
             if (dbFileModel.isValid()) {
                 tilesMap.put(tpk.getName(), dbFileModel);
             } else {
@@ -360,35 +366,28 @@ public class MapServerDataCenter {
      */
     public Optional<JdbcTemplate> getDataSource(String fileName) {
         if (StringUtils.hasLength(fileName)) {
-            TilesFileModel model = tilesMap.get(fileName);
-            return Optional.of(model.getJdbcTemplate());
-        } else {
-            return Optional.empty();
+            AbstractTile model = tilesMap.get(fileName);
+            if (model instanceof TileOfMbtiles m) {
+                return Optional.of(m.getJdbcTemplate());
+            }
         }
+        return Optional.empty();
     }
 
     public void releaseDataSource(String fileName) {
         if (fileName.endsWith(AppConfig.FILE_EXTENSION_NAME_MBTILES)) {
             if (StringUtils.hasLength(fileName) && tilesMap.containsKey(fileName)) {
-                TilesFileModel remove = tilesMap.remove(fileName);
-                JdbcTemplate jdbcTemplate = remove.getJdbcTemplate();
-                //执行检查点操作，将所有WAL内容写入主数据库文件
-                jdbcTemplate.execute("PRAGMA wal_checkpoint(FULL)");
-                DataSource dataSource = jdbcTemplate.getDataSource();
-                if (dataSource instanceof HikariDataSource hikariDataSource) {
-                    hikariDataSource.close();
-                }
+                AbstractTile tileSource = tilesMap.remove(fileName);
+                tileSource.releaseResource();
             }
         }
 
         if (fileName.endsWith(AppConfig.FILE_EXTENSION_NAME_TPK)) {
             if (StringUtils.hasLength(fileName) && tilesMap.containsKey(fileName)) {
-                TilesFileModel remove = tilesMap.remove(fileName);
-                remove.setTpkFile(null);
-                remove.setZoomLevelMap(null);
+                AbstractTile tileSource = tilesMap.remove(fileName);
+                tileSource.releaseResource();
             }
         }
-
     }
 
     /**
@@ -397,7 +396,7 @@ public class MapServerDataCenter {
      * @param fileName 瓦片集文件名称
      * @return 瓦片集文件对象
      */
-    public TilesFileModel getTilesFileModel(String fileName) {
+    public AbstractTile getTilesFileModel(String fileName) {
         return tilesMap.get(fileName);
     }
 
@@ -410,7 +409,7 @@ public class MapServerDataCenter {
      */
     public Map<String, Object> getTileMetaData(String fileName) {
         if (StringUtils.hasLength(fileName)) {
-            TilesFileModel model = tilesMap.get(fileName);
+            AbstractTile model = tilesMap.get(fileName);
             if (model != null) {
                 return model.getMetaDataMap();
             }

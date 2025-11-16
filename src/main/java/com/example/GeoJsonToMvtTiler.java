@@ -30,6 +30,7 @@ import java.util.*;
 /**
  * GeoJSON到MVT切片转换工具
  * 使用Java 21, mapbox-vector-tile-java 25.1.0 和 GeoTools 33.0
+ * TODO Create Tilejson: https://github.com/mapbox/tilejson-spec/tree/master/3.0.0
  */
 public class GeoJsonToMvtTiler {
 
@@ -199,7 +200,7 @@ public class GeoJsonToMvtTiler {
 
                     // 创建瓦片文件：y
                     byte[] mvtData = createMvt(tileGeometries, tileEnvelope, key);
-                    Path tilePath = xPath.resolve(y + ".mvt");
+                    Path tilePath = xPath.resolve(y + ".pbf");
 
                     try (FileOutputStream fos = new FileOutputStream(tilePath.toFile())) {
                         fos.write(mvtData);

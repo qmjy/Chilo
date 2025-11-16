@@ -16,7 +16,6 @@
 
 package io.github.qmjy.mapserver.util;
 
-import io.github.qmjy.mapserver.service.AsyncService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +24,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -33,6 +36,13 @@ import java.util.zip.GZIPOutputStream;
  */
 public class IOUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(IOUtils.class);
+
+    // 常见压缩格式的文件头
+    private static final byte[] GZIP_HEADER = {0x1f, (byte) 0x8b};
+    private static final byte[] ZIP_HEADER = {0x50, 0x4b, 0x03, 0x04};
+    private static final byte[] ZIP_EMPTY_HEADER = {0x50, 0x4b, 0x05, 0x06};
+    private static final byte[] ZIP_SPANNED_HEADER = {0x50, 0x4b, 0x07, 0x08};
+    private static final byte[] BZIP2_HEADER = {0x42, 0x5a, 0x68};
 
     public static void mkdirs(String path) {
         if (!new File(path).exists()) {
@@ -121,6 +131,19 @@ public class IOUtils {
     }
 
     /**
+     * 获取指定文件夹的所有叶子节点文件
+     *
+     * @param directoryPath 需要查找的目录
+     * @return 叶子节点文件列表
+     * @throws IOException IOException
+     */
+    public static List<Path> findLeafFiles(String directoryPath) throws IOException {
+        return Files.walk(Paths.get(directoryPath))
+                .filter(Files::isRegularFile)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * GZIP压缩数据
      *
      * @param data 待压缩的数据
@@ -144,7 +167,7 @@ public class IOUtils {
      * @param compressedData GZIP数据
      * @return 解压后的数据
      */
-    public static byte[] decompress(byte[] compressedData) {
+    public static byte[] unGzip(byte[] compressedData) {
         try {
             ByteArrayInputStream in = new ByteArrayInputStream(compressedData);
             GZIPInputStream gunzip = new GZIPInputStream(in);
@@ -159,5 +182,33 @@ public class IOUtils {
         } catch (IOException e) {
             return new byte[0];
         }
+    }
+
+    public static boolean isCompressed(byte[] data) {
+        if (data == null || data.length < 4) {
+            return false;
+        }
+
+        return isGZIP(data) || isZIP(data) || isBZIP2(data);
+    }
+
+    public static boolean isGZIP(byte[] data) {
+        return data.length >= 2 && data[0] == GZIP_HEADER[0] && data[1] == GZIP_HEADER[1];
+    }
+
+    public static boolean isZIP(byte[] data) {
+        if (data.length < 4) return false;
+
+        return (data[0] == ZIP_HEADER[0] && data[1] == ZIP_HEADER[1] &&
+                data[2] == ZIP_HEADER[2] && data[3] == ZIP_HEADER[3]) ||
+                (data[0] == ZIP_EMPTY_HEADER[0] && data[1] == ZIP_EMPTY_HEADER[1] &&
+                        data[2] == ZIP_EMPTY_HEADER[2] && data[3] == ZIP_EMPTY_HEADER[3]) ||
+                (data[0] == ZIP_SPANNED_HEADER[0] && data[1] == ZIP_SPANNED_HEADER[1] &&
+                        data[2] == ZIP_SPANNED_HEADER[2] && data[3] == ZIP_SPANNED_HEADER[3]);
+    }
+
+    public static boolean isBZIP2(byte[] data) {
+        return data.length >= 3 && data[0] == BZIP2_HEADER[0] &&
+                data[1] == BZIP2_HEADER[1] && data[2] == BZIP2_HEADER[2];
     }
 }

@@ -18,7 +18,7 @@ package io.github.qmjy.mapserver.controller;
 
 import io.github.qmjy.mapserver.MapServerDataCenter;
 import io.github.qmjy.mapserver.config.AppConfig;
-import io.github.qmjy.mapserver.model.TilesFileModel;
+import io.github.qmjy.mapserver.model.AbstractTile;
 import io.github.qmjy.mapserver.model.TilesViewModel;
 import io.github.qmjy.mapserver.util.SystemUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -246,7 +246,7 @@ public class MapServerWebController extends BaseController {
             return dataList;
         }
         for (File file : files) {
-            TilesFileModel tilesFileModel = mapServerDataCenter.getTilesMap().get(file.getName());
+            AbstractTile tilesFileModel = mapServerDataCenter.getTilesMap().get(file.getName());
             if (tilesFileModel != null) {
                 // 大mbtiles文件可能加载还未就绪
                 dataList.add(new TilesViewModel(file, tilesFileModel.getMetaDataMap()));
