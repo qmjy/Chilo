@@ -232,45 +232,51 @@ public class MapServerDataCenter {
             List<Integer> levelList = administrativeDivisionLevel.keySet().stream().sorted().toList();
             for (int i = 0; i < levelList.size(); i++) {
                 Integer currentLevel = levelList.get(i);
+                List<SimpleFeature> currentLevelFeatures = administrativeDivisionLevel.get(currentLevel);
                 if (i == 0) {
                     //TODO 假设根节点只有一个
-                    SimpleFeature first = administrativeDivisionLevel.get(currentLevel).getFirst();
+                    SimpleFeature first = currentLevelFeatures.getFirst();
                     simpleAdminDivision = new AdministrativeDivisionNode(first, -1);
                 } else {
                     Integer upperLevel = levelList.get(i - 1);
-                    List<SimpleFeature> simpleFeatures = administrativeDivisionLevel.get(upperLevel);
-                    for (SimpleFeature node : simpleFeatures) {
-                        addAdminLevelNode(administrativeDivisionLevel.get(upperLevel), node);
+                    List<SimpleFeature> upperLevelFeatures = administrativeDivisionLevel.get(upperLevel);
+
+                    for (SimpleFeature currentLevelFeature : currentLevelFeatures) {
+                        int osmId = getParentId(currentLevelFeature, upperLevelFeatures);
+                        if (osmId != -1) {
+                            appendToAdminNode(simpleAdminDivision, osmId, currentLevelFeature);
+                        }
                     }
                 }
             }
+            System.out.printf("");
         }
     }
 
-    private void addAdminLevelNode(List<SimpleFeature> upperLevelFeatures, SimpleFeature node) {
+    private void appendToAdminNode(AdministrativeDivisionNode simpleAdminDivision, int osmId, SimpleFeature currentLevelFeature) {
+        List<AdministrativeDivisionNode> children = simpleAdminDivision.getChildren();
+        if (simpleAdminDivision.getId() == osmId) {
+            children.add(new AdministrativeDivisionNode(currentLevelFeature, osmId));
+            return;
+        }
+        for (AdministrativeDivisionNode child : children) {
+            appendToAdminNode(child, osmId, currentLevelFeature);
+        }
+    }
+
+    private int getParentId(SimpleFeature currentLevelFeature, List<SimpleFeature> upperLevelFeatures) {
         for (SimpleFeature upperLevelFeature : upperLevelFeatures) {
             Object geometry = upperLevelFeature.getAttribute("geometry");
             if (geometry instanceof Polygon || geometry instanceof MultiPolygon) {
                 Geometry g = (Geometry) geometry;
-                if (g.covers((Geometry) node.getAttribute("geometry"))) {
-                    add2Parents(simpleAdminDivision, upperLevelFeature, node);
+                if (g.covers((Geometry) currentLevelFeature.getAttribute("geometry"))) {
+                    return (int) upperLevelFeature.getAttribute("osm_id");
                 }
             }
         }
+        return -1;
     }
 
-    private void add2Parents(AdministrativeDivisionNode root, SimpleFeature upperLevelFeature, SimpleFeature node) {
-        if (root.getId() == (int) upperLevelFeature.getAttribute("osm_id")) {
-            root.getChildren().add(new AdministrativeDivisionNode(node, root.getId()));
-        } else {
-            if (root.getChildren().isEmpty()) {
-                return;
-            }
-            for (AdministrativeDivisionNode child : root.getChildren()) {
-                add2Parents(child, upperLevelFeature, node);
-            }
-        }
-    }
 
     /**
      * 抽取一个判断数据是否为老版本，老版本数据才有parents属性
