@@ -47,8 +47,14 @@ public class GeoJsonToMvtTiler {
     // 原点坐标（墨卡托投影的左上角）
     private static final double EARTH_HALF_CIRCUMFERENCE_MERCATOR = EARTH_CIRCUMFERENCE / 2.0;
 
-    private static final int TILE_COORDINATE_DIRECTION_ORIGIN_LEFT_TOP = 0;
-    private static final int TILE_COORDINATE_DIRECTION_ORIGIN_LEFT_BOTTOM = 1;
+    /**
+     * 左上角作为坐标原点
+     */
+    private static final int TILE_COORDINATE_SCHEME_XYZ = 0;
+    /**
+     * 左下角作为坐标原点
+     */
+    private static final int TILE_COORDINATE_SCHEME_TMS = 1;
 
     /**
      * 当前要切片的地理数据边界范围
@@ -151,7 +157,7 @@ public class GeoJsonToMvtTiler {
 //        int tileCount = (int) Math.pow(2, zoom);
         if (!geometryMap.isEmpty()) {
             if (geometryMap.values().iterator().next().getFirst().getSRID() == CRS_VALUE_WGS84) {
-                Map<String, Integer> tileInfoMap = calculateTileRange(bounds, TILE_COORDINATE_DIRECTION_ORIGIN_LEFT_TOP, zoom);
+                Map<String, Integer> tileInfoMap = calculateTileRange(bounds, TILE_COORDINATE_SCHEME_XYZ, zoom);
                 for (int x = tileInfoMap.get("minTileX"); x <= tileInfoMap.get("maxTileX"); x++) {
                     for (int y = tileInfoMap.get("minTileY"); y <= tileInfoMap.get("maxTileY"); y++) {
                         createTile(geometryMap, zoom, x, y, zoomPath);
@@ -331,11 +337,11 @@ public class GeoJsonToMvtTiler {
         int maxTileX = longitudeToTileX(envelope.getMaxX(), zoom);
         int minTileY, maxTileY;
 
-        if (TILE_COORDINATE_DIRECTION_ORIGIN_LEFT_TOP == origin) {
+        if (TILE_COORDINATE_SCHEME_XYZ == origin) {
             // 左上角为原点
             minTileY = latitudeToTileYTopLeft(envelope.getMaxY(), zoom);
             maxTileY = latitudeToTileYTopLeft(envelope.getMinY(), zoom);
-        } else if (TILE_COORDINATE_DIRECTION_ORIGIN_LEFT_BOTTOM == origin) {
+        } else if (TILE_COORDINATE_SCHEME_TMS == origin) {
             // 左下角为原点
             minTileY = latitudeToTileYBottomLeft(envelope.getMinY(), zoom);
             maxTileY = latitudeToTileYBottomLeft(envelope.getMaxY(), zoom);

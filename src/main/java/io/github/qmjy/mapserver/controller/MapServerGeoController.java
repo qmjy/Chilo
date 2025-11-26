@@ -149,7 +149,10 @@ public class MapServerGeoController {
             if (!sb.isEmpty()) {
                 sb.append(splitter);
             }
+
+            leaf = simpleAdminDivision;
             sb.append(langType == 0 ? simpleAdminDivision.getName() : simpleAdminDivision.getNameEn() + " ");
+
             if (!simpleAdminDivision.getChildren().isEmpty()) {
                 for (AdministrativeDivisionNode child : simpleAdminDivision.getChildren()) {
                     AdministrativeDivisionNode childResult = getFullPath2Leaf(child, point, sb, langType, splitter);
@@ -157,8 +160,6 @@ public class MapServerGeoController {
                         leaf = childResult;
                     }
                 }
-            } else {
-                leaf = simpleAdminDivision;
             }
         }
         return leaf;
