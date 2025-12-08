@@ -66,6 +66,10 @@ public class MapServerWebController extends BaseController {
         return "index";
     }
 
+    @GetMapping("/sdk-performance.html")
+    public String performance() {
+        return "sdk-performance";
+    }
 
     @GetMapping("/fonts.html")
     public String fonts() {
