@@ -2,6 +2,7 @@ package io.github.qmjy.mapserver.async;
 
 import io.github.qmjy.mapserver.MapServerDataCenter;
 import io.github.qmjy.mapserver.config.AppConfig;
+import io.github.qmjy.mapserver.config.DataSourceApplicationRunner;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,12 +40,7 @@ public class AsyncTask {
                     }
                 }
 
-                File[] tpks = tilesetsFolder.listFiles(pathname -> pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_TPK));
-                if (tpks != null) {
-                    for (File tpk : tpks) {
-                        MapServerDataCenter.getInstance().indexTpk(tpk);
-                    }
-                }
+                DataSourceApplicationRunner.indexArcgisTpk(tilesetsFolder);
             }
         }
     }

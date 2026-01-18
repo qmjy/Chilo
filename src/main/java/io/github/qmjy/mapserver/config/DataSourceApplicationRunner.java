@@ -83,8 +83,8 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
 
     private void wrapMapFile(File dataFolder) {
         File tilesetsFolder = new File(dataFolder, "tilesets");
-        searchTilesOfMbtiles(tilesetsFolder);
         searchTileOfTpk(tilesetsFolder);
+        searchTilesOfMbtiles(tilesetsFolder);
         searchShapefile(tilesetsFolder);
         MapServerDataCenter.getInstance().setInitialized(true);
     }
@@ -101,8 +101,14 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
 
 
     private void searchTileOfTpk(File tilesetsFolder) {
-        //TODO VTPK待解析
-        File[] files = tilesetsFolder.listFiles(pathname -> pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_TPK));
+        indexArcgisTpk(tilesetsFolder);
+    }
+
+    public static void indexArcgisTpk(File tilesetsFolder) {
+        File[] files = tilesetsFolder.listFiles(pathname ->
+                pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_TPK)
+                        || pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_VTPK)
+                        || pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_TPKX));
         if (files != null) {
             for (File tpk : files) {
                 MapServerDataCenter.getInstance().indexTpk(tpk);

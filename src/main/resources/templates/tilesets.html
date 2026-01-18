@@ -29,7 +29,7 @@
     <thead>
     <tr>
         <th>名称</th>
-        <th>mapbox</th>
+        <th>maplibre</th>
         <th>openlayers</th>
         <th>瓦片数</th>
         <th>文件大小</th>
@@ -55,10 +55,10 @@
                 tr.appendChild(td1);
 
                 const td2 = document.createElement('td');
-                const mapboxPreview = document.createElement("a")
-                mapboxPreview.href = `/mapbox/${key}`;
-                mapboxPreview.textContent = `预览`;
-                td2.appendChild(mapboxPreview);
+                const mapPreview = document.createElement("a")
+                mapPreview.href = `/maplibre/${key}`;
+                mapPreview.textContent = `预览`;
+                td2.appendChild(mapPreview);
                 tr.appendChild(td2);
 
                 const td3 = document.createElement('td');

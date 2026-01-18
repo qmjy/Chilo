@@ -38,7 +38,7 @@ import java.nio.file.Files;
 @RestController
 @RequestMapping("/api/sprites")
 @AllArgsConstructor
-@Tag(name = "Mapbox雪碧图服务管理", description = "Mapbox离线服务接口能力")
+@Tag(name = "Maplibre雪碧图服务管理", description = "Maplibre离线服务接口能力")
 public class MapServerSpritesController {
 
     private AppConfig appConfig;

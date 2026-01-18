@@ -34,6 +34,8 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.Set;
 
@@ -42,7 +44,7 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("/api/fonts")
-@Tag(name = "Mapbox字体服务管理", description = "Mapbox离线服务接口能力")
+@Tag(name = "Maplibre 字体服务管理", description = "Maplibre 离线服务接口能力")
 public class MapServerFontsController {
     private final Logger logger = LoggerFactory.getLogger(MapServerFontsController.class);
     private final MapServerDataCenter mapServerDataCenter;
@@ -53,6 +55,7 @@ public class MapServerFontsController {
 
     /**
      * 获取字体文件列表
+     *
      * @return 字体名称列表
      */
     @GetMapping(value = "", produces = "application/json")
@@ -67,18 +70,22 @@ public class MapServerFontsController {
      *
      * @param fontName 文件名
      * @param range    文件数据区间
-     * @return 字体文件的pbf数据
+     * @return 字体文件的pbf 数据
      */
     @GetMapping(value = "/{fontName}/{range}.pbf", produces = "application/x-protobuf")
     @ResponseBody
-    public ResponseEntity<ByteArrayResource> loadPbfFont(@PathVariable("fontName") String fontName, @PathVariable("range") String range) {
+    public ResponseEntity<ByteArrayResource> loadPbfFont(@PathVariable String fontName, @PathVariable String range) {
         Optional<FontsFileModel> fontFolder = mapServerDataCenter.getFontFolder(fontName);
         if (fontFolder.isPresent()) {
             FontsFileModel fontsFileModel = fontFolder.get();
-            String fileName = fontsFileModel.getFolder().getAbsolutePath() + File.separator + range + AppConfig.FILE_EXTENSION_NAME_PBF;
+            Path basePath = Paths.get(fontsFileModel.getFolder().getPath()).toAbsolutePath().normalize();
+            Path requestedPath = basePath.resolve(range + AppConfig.FILE_EXTENSION_NAME_PBF).normalize();
             try {
-                File file = new File(fileName);
-                byte[] buffer = FileCopyUtils.copyToByteArray(file);
+                if (!requestedPath.startsWith(basePath)) {
+                    logger.warn("Attempted path traversal attack detected for font: {}, range: {}", fontName, range);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                }
+                byte[] buffer = FileCopyUtils.copyToByteArray(requestedPath.toFile());
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_PROTOBUF);
                 ByteArrayResource resource = new ByteArrayResource(buffer);
@@ -87,7 +94,9 @@ public class MapServerFontsController {
                 throw new RuntimeException(e);
             }
         } else {
-            InputStream inputStream = MapServerFontsController.class.getResourceAsStream("/static/fonts/" + fontName + "/" + range + AppConfig.FILE_EXTENSION_NAME_PBF);
+            String name = "/static/fonts/" + fontName + "/" + range + AppConfig.FILE_EXTENSION_NAME_PBF;
+            InputStream inputStream = MapServerFontsController.class.getResourceAsStream(name);
+
             if (inputStream != null) {
                 try {
                     byte[] buffer = inputStream.readAllBytes();

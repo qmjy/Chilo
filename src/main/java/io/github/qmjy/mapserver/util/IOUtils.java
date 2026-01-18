@@ -32,7 +32,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 /**
- * IO工具类
+ * IO 工具类
  */
 public class IOUtils {
     private static final Logger LOGGER = LoggerFactory.getLogger(IOUtils.class);
@@ -47,7 +47,7 @@ public class IOUtils {
     public static void mkdirs(String path) {
         if (!new File(path).exists()) {
             if (!new File(path).mkdirs()) {
-                LOGGER.error("mkdirs failed: " + path);
+                LOGGER.error("mkdirs failed: {}", path);
             }
         }
     }
@@ -144,10 +144,10 @@ public class IOUtils {
     }
 
     /**
-     * GZIP压缩数据
+     * GZIP 压缩数据
      *
      * @param data 待压缩的数据
-     * @return 压缩后的GZIP数据
+     * @return 压缩后的GZIP 数据
      */
     public static byte[] compress(byte[] data) {
         try {
@@ -164,7 +164,7 @@ public class IOUtils {
     /**
      * 解压缩数据
      *
-     * @param compressedData GZIP数据
+     * @param compressedData GZIP 数据
      * @return 解压后的数据
      */
     public static byte[] unGzip(byte[] compressedData) {

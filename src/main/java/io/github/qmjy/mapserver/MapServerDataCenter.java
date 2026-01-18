@@ -17,7 +17,6 @@
 package io.github.qmjy.mapserver;
 
 import com.graphhopper.GraphHopper;
-import com.zaxxer.hikari.HikariDataSource;
 import io.github.qmjy.mapserver.config.AppConfig;
 import io.github.qmjy.mapserver.model.*;
 import lombok.Getter;
@@ -36,11 +35,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 地图数据库服务工具
@@ -60,7 +59,7 @@ public class MapServerDataCenter {
     /**
      * 不会再被加载的文件列表
      */
-    private final Set<String> blockedTiles = new HashSet<>();
+    private final Set<String> removedTiles = new HashSet<>();
 
 
     private final Map<String, FileDataStore> shpDataStores = new HashMap<>();
@@ -137,18 +136,25 @@ public class MapServerDataCenter {
     }
 
     /**
-     * 预加载tpk
+     * 预加载 tpk
      *
-     * @param tpk tpk文件
+     * @param tpk tpk 文件
      */
     public void indexTpk(File tpk) {
-        if (!tilesMap.containsKey(tpk.getName()) && !blockedTiles.contains(tpk.getName())) {
+        if (!tilesMap.containsKey(tpk.getName()) && !removedTiles.contains(tpk.getName())) {
             logger.info("Try to load tile of tpk: {}", tpk.getName());
             TileOfTpk dbFileModel = new TileOfTpk(tpk);
+            while (!dbFileModel.isLoaded()) {
+                try {
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             if (dbFileModel.isValid()) {
                 tilesMap.put(tpk.getName(), dbFileModel);
             } else {
-                blockedTiles.add(tpk.getName());
+                removedTiles.add(tpk.getName());
             }
         }
     }
@@ -249,7 +255,6 @@ public class MapServerDataCenter {
                     }
                 }
             }
-            System.out.printf("");
         }
     }
 
@@ -388,7 +393,7 @@ public class MapServerDataCenter {
             }
         }
 
-        if (fileName.endsWith(AppConfig.FILE_EXTENSION_NAME_TPK)) {
+        if (fileName.endsWith(AppConfig.FILE_EXTENSION_NAME_TPK) || fileName.endsWith(AppConfig.FILE_EXTENSION_NAME_TPKX) || fileName.endsWith(AppConfig.FILE_EXTENSION_NAME_VTPK)) {
             if (StringUtils.hasLength(fileName) && tilesMap.containsKey(fileName)) {
                 AbstractTile tileSource = tilesMap.remove(fileName);
                 tileSource.releaseResource();

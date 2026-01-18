@@ -102,15 +102,15 @@ public class MapServerWebController extends BaseController {
     }
 
     /**
-     * 提供指定瓦片数据库的地图Mapbox预览页面
+     * 提供指定瓦片数据库的地图 Maplibre 预览页面
      *
-     * @param tileset 待预览的地图瓦片数据库库名称，默认为mbtiles扩展名
+     * @param tileset 待预览的地图瓦片数据库库名称，默认为 mbtiles 扩展名
      * @param request HttpServletRequest
      * @param model   前端页面数据模型
      * @return 地图预览页面
      */
-    @GetMapping("/mapbox/{tileset}")
-    public String mapbox(@PathVariable("tileset") String tileset, HttpServletRequest request, Model model) {
+    @GetMapping("/maplibre/{tileset}")
+    public String maplibre(@PathVariable("tileset") String tileset, HttpServletRequest request, Model model) {
         if (SystemUtils.checkTilesetName(tileset)) {
             return "error";
         }
@@ -121,7 +121,7 @@ public class MapServerWebController extends BaseController {
             Map<String, Object> tileMetaData = mapServerDataCenter.getTileMetaData(tileset);
             model.addAttribute("metaData", tileMetaData);
 
-            return "pbf".equals(tileMetaData.get("format")) ? "mapbox-vector" : "mapbox-raster";
+            return "pbf".equals(tileMetaData.get("format")) ? "maplibre-vector" : "maplibre-raster";
         }
         if (tileset.endsWith(AppConfig.FILE_EXTENSION_NAME_TPK)) {
             model.addAttribute("tilesetName", tileset);
@@ -130,8 +130,8 @@ public class MapServerWebController extends BaseController {
 
             //在tpk中，MIXED— 将在包的中心使用 JPEG 格式，在包的边缘使用 PNG32。
             String format = tileMetaData.get("format").toString();
-            return "jpg".equals(format) || "jpeg".equals(format) || "png".equals(format) || "webp".equals(format)
-                    ? "mapbox-raster" : "mapbox-vector";
+            return "jpg".equals(format) || "jpeg".equals(format) || "png".equals(format) || "webp".equals(format) || "tif".equals(format)
+                    ? "maplibre-raster" : "maplibre-vector";
         } else {
             StringBuilder sb = new StringBuilder(appConfig.getDataPath());
             sb.append(File.separator).append("tilesets").append(File.separator).append(tileset).append(File.separator).append("metadata.json");
@@ -142,7 +142,7 @@ public class MapServerWebController extends BaseController {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            return "mapbox-pbf";
+            return "maplibre-pbf";
         }
     }
 

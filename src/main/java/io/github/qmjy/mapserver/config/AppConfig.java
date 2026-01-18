@@ -34,6 +34,7 @@ public class AppConfig {
      * 矢量瓦片包，存储矢量数据而非栅格瓦片
      */
     public static final String FILE_EXTENSION_NAME_TPK = ".tpk";
+    public static final String FILE_EXTENSION_NAME_TPKX = ".tpkx";
     public static final String FILE_EXTENSION_NAME_VTPK = ".vtpk";
     /**
      * 地图包，包含地图文档和引用的数据
