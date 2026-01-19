@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-Hans-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>青罗栅格预览</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="/static/assets/maplibre-gl-js/v5.0.1/maplibre-gl.css" rel="stylesheet">
+    <script src="/static/assets/maplibre-gl-js/v5.0.1/maplibre-gl.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .scheme {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 10;
+            color: #fff;
+        }
+
+        .toggle-button-cover {
+            display: table-cell;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        .button-cover {
+            height: 50px;
+            margin: 5px 0;
+            background-color: #fff;
+            box-shadow: 0 10px 20px -8px #c5d6d6;
+            border-radius: 4px;
+        }
+
+        .button-cover,
+        .knobs,
+        .layer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .button {
+            position: relative;
+            top: 50%;
+            width: 74px;
+            height: 36px;
+            margin: -20px auto 0 auto;
+            overflow: hidden;
+        }
+
+        .button.r,
+        .button.r .layer {
+            border-radius: 100px;
+        }
+
+        .button.b2 {
+            border-radius: 2px;
+        }
+
+        .checkbox {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 3;
+        }
+
+        .knobs {
+            z-index: 2;
+        }
+
+        .layer {
+            width: 100%;
+            background-color: #ebf7fc;
+            transition: 0.3s ease all;
+            z-index: 1;
+        }
+
+        /* Button 11 */
+        #button-11 {
+            overflow: visible;
+        }
+
+        #button-11 .knobs {
+            perspective: 70px;
+        }
+
+        #button-11 .knobs:before,
+        #button-11 .knobs:after,
+        #button-11 .knobs span {
+            position: absolute;
+            top: 4px;
+            border-radius: 2px;
+        }
+
+        #button-11 .knobs:before,
+        #button-11 .knobs:after {
+            width: 20px;
+            height: 10px;
+            color: #4e4e4e;
+            font-size: 10px;
+            font-weight: bold;
+            text-align: center;
+            line-height: 1;
+            padding: 9px 4px;
+        }
+
+        #button-11 .knobs:before {
+            content: "TMS";
+            left: 4px;
+        }
+
+        #button-11 .knobs:after {
+            content: "XYZ";
+            right: 4px;
+        }
+
+        #button-11 .knobs span {
+            right: 4px;
+            width: 33px;
+            height: 28px;
+            background-color: #03a9f4;
+            transform: rotateY(0);
+            transform-origin: 0% 50%;
+            transition: 0.6s ease all;
+            z-index: 1;
+        }
+
+        #button-11 .checkbox:checked + .knobs span {
+            transform: rotateY(-180deg);
+            background-color: #f44336;
+        }
+
+        #button-11 .checkbox:checked ~ .layer {
+            background-color: #fcebeb;
+        }
+
+    </style>
+</head>
+
+<body>
+<div id="map"></div>
+<div class="scheme">
+    <ul>
+        <li>TMS: 原点在左下角，Y轴向上递增；更符合笛卡尔坐标系；常用于GIS专业应用</li>
+        <li>XYZ: 原点在左上角，Y轴向下递增；Google Maps、OSM使用此标准</li>
+    </ul>
+
+    <div class="toggle-button-cover">
+        <div class="button-cover">
+            <div class="button b2" id="button-11">
+                <input id="scheme" type="checkbox" class="checkbox"/>
+                <div class="knobs">
+                    <span></span>
+                </div>
+                <div class="layer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    let scheme = "xyz";
+    let map, mapData;
+
+    function showMap(tileName, scheme, result) {
+        const hostUrl = `${window.location.protocol}//${window.location.host}`
+        map = new maplibregl.Map({
+            container: 'map',
+            style: {
+                'version': 8,
+                'glyphs': `${hostUrl}/api/fonts/{fontstack}/{range}.pbf`,
+                'sources': {
+                    'raster-tiles': {
+                        'scheme': scheme,
+                        'type': 'raster',
+                        'tiles': [`${hostUrl}/api/tilesets/${tileName}/{z}/{x}/{y}.${result.format}`],
+                        'tileSize': 256,
+                        'attribution':
+                            '<a href="https://github.com/qmjy/Chilo">github</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    }
+                },
+                'layers': [
+                    {
+                        'id': 'simple-tiles',
+                        'type': 'raster',
+                        'source': 'raster-tiles',
+                        'minzoom': 0,
+                        'maxzoom': 22,
+                    }
+                ]
+            },
+            center: [114.139102, 22.396835],
+            zoom: parseInt(result.minzoom ? result.minzoom : "4"),
+            hash: true
+        });
+
+        map.on('load', () => {
+            map.addSource('China', {
+                type: 'geojson',
+                data: '/static/ChinaProvince.geojson'
+            });
+
+            map.addLayer({
+                'id': 'ChinaBounds',
+                'type': 'line',
+                'source': 'China',
+                'paint': {
+                    'line-color': 'hsl(202, 100%, 72%)',
+                    'line-opacity': 0.5,
+                    'line-width': 3,
+                },
+            });
+
+            map.addLayer({
+                'id': 'Province',
+                'type': 'symbol',
+                'source': 'China',
+                'layout': {
+                    'text-field': ['get', 'name'],
+                    'text-size': 12,
+                    "text-allow-overlap": false,
+                    'text-offset': [0, 0],
+                    'text-anchor': 'center',
+                    'text-justify': 'center',
+                    'text-font': ['Arial Unicode MS Regular'],
+                },
+                'paint': {
+                    'text-halo-color': '#444444',
+                    'text-halo-width': 1,
+                    'text-color': '#FFFFFF'
+                }
+            });
+
+            if (result.center) {
+                setTimeout(function () {
+                    const center = JSON.parse(result.center);
+                    map.flyTo({
+                        center: [center[0], center[1]],
+                        zoom: center[2],
+                        essential: true
+                    });
+                }, 2000)
+            } else {
+                console.log("no center set!")
+            }
+        });
+
+        map.addControl(new maplibregl.NavigationControl())
+        map.addControl(new maplibregl.FullscreenControl())
+        map.addControl(new maplibregl.ScaleControl())
+    }
+
+    function getTilesetName() {
+        const path = window.location.pathname;
+        return path.substring(path.lastIndexOf('/') + 1);
+    }
+
+    document.getElementById("scheme").addEventListener("click", function () {
+        scheme = (scheme === "tms" ? "xyz" : "tms")
+        if (map) {
+            map.remove();
+            map = null;
+            showMap(getTilesetName(), scheme, mapData);
+        }
+    })
+
+    window.addEventListener("load", function () {
+        const tilesetName = getTilesetName();
+        document.title = `Chilo栅格预览-${tilesetName}`;
+        fetch(`/api/tilesets/${tilesetName}/tiles.json`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                mapData = data
+                showMap(tilesetName, scheme, data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+</body>
+
+</html>
