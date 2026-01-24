@@ -17,9 +17,9 @@
 package io.github.qmjy.mapserver.controller;
 
 import io.github.qmjy.mapserver.config.AppConfig;
+import io.github.qmjy.mapserver.util.FileUtils;
 import io.github.qmjy.mapserver.util.SystemUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,10 +31,11 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/styles")
-@Tag(name = "Maplibre样式服务管理", description = "Maplibre离线服务接口能力")
+@Tag(name = "Maplibre 样式服务管理", description = "Maplibre 离线服务接口能力")
 public class MapServerStyleController {
     private final AppConfig appConfig;
 
@@ -50,23 +51,24 @@ public class MapServerStyleController {
      */
     @ResponseBody
     @GetMapping(value = "/{styleName}", produces = "application/json")
-    public ResponseEntity<String> loadStyle(@PathVariable("styleName") String styleName) {
+    public ResponseEntity<String> loadStyle(@PathVariable String styleName) {
         if (SystemUtils.checkTilesetName(styleName)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         if (StringUtils.hasLength(appConfig.getDataPath())) {
-            StringBuilder sb = new StringBuilder(appConfig.getDataPath());
-            sb.append(File.separator).append("styles").append(File.separator).append(styleName);
-            try {
-                String styleJson = FileCopyUtils.copyToString(new FileReader(sb.toString()));
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                return ResponseEntity.ok().headers(headers).contentLength(styleJson.getBytes().length).body(styleJson);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            Optional<File> safeFileOfStyle = FileUtils.getInstance(appConfig).getSafeFileOfStyle(styleName);
+            if (safeFileOfStyle.isPresent()) {
+                File file = safeFileOfStyle.get();
+                try {
+                    String styleJson = FileCopyUtils.copyToString(new FileReader(file));
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_JSON);
+                    return ResponseEntity.ok().headers(headers).contentLength(styleJson.getBytes().length).body(styleJson);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

@@ -17,6 +17,7 @@
 package io.github.qmjy.mapserver.controller;
 
 import io.github.qmjy.mapserver.config.AppConfig;
+import io.github.qmjy.mapserver.util.FileUtils;
 import io.github.qmjy.mapserver.util.SystemUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
@@ -34,73 +35,74 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/sprites")
 @AllArgsConstructor
-@Tag(name = "Maplibre雪碧图服务管理", description = "Maplibre离线服务接口能力")
+@Tag(name = "Maplibre 雪碧图服务管理", description = "Maplibre 离线服务接口能力")
 public class MapServerSpritesController {
 
     private AppConfig appConfig;
 
 
     /**
-     * 加载sprite的json内容
+     * 加载sprite的json 内容
      *
-     * @return sprite的json内容
+     * @return sprite的json 内容
      */
     @ResponseBody
     @GetMapping(value = "/{spriteName}/{fileName}.json", produces = "application/json")
-    public ResponseEntity<String> loadStyle(@PathVariable("spriteName") String spriteName, @PathVariable("fileName") String fileName) {
+    public ResponseEntity<String> loadStyle(@PathVariable String spriteName, @PathVariable String fileName) {
         if (SystemUtils.checkTilesetName(fileName)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         String configDataPath = appConfig.getDataPath();
         if (StringUtils.hasLength(configDataPath)) {
-            StringBuilder sb = new StringBuilder(configDataPath);
-            sb.append(File.separator).append("sprites").append(File.separator).append(spriteName).append(File.separator).append(fileName).append(AppConfig.FILE_EXTENSION_NAME_JSON);
-            try {
-                String styleJson = FileCopyUtils.copyToString(new FileReader(sb.toString()));
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.APPLICATION_JSON);
-                return ResponseEntity.ok().headers(headers).contentLength(styleJson.getBytes().length).body(styleJson);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            Optional<File> safeFileOfSprites = FileUtils.getInstance(appConfig).getSafeFileOfSprites(spriteName, fileName, AppConfig.FILE_EXTENSION_NAME_JSON);
+            if (safeFileOfSprites.isPresent()) {
+                try {
+                    String styleJson = FileCopyUtils.copyToString(new FileReader(safeFileOfSprites.get()));
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.APPLICATION_JSON);
+                    return ResponseEntity.ok().headers(headers).contentLength(styleJson.getBytes().length).body(styleJson);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     /**
-     * 加载sprite的图片内容
+     * 加载sprite 的图片内容
      *
-     * @return sprite的图片内容
+     * @return sprite 的图片内容
      */
     @ResponseBody
     @GetMapping(value = "/{spriteName}/{fileName}.png")
-    public ResponseEntity<ByteArrayResource> loadSpritePng(@PathVariable("spriteName") String spriteName, @PathVariable("fileName") String fileName) {
+    public ResponseEntity<ByteArrayResource> loadSpritePng(@PathVariable String spriteName, @PathVariable String fileName) {
         if (SystemUtils.checkTilesetName(fileName)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         if (StringUtils.hasLength(appConfig.getDataPath())) {
-            StringBuilder sb = new StringBuilder(appConfig.getDataPath());
-            sb.append(File.separator).append("sprites").append(File.separator).append(spriteName).append(File.separator).append(fileName).append(AppConfig.FILE_EXTENSION_NAME_PNG);
-            try {
-                File file = new File(sb.toString());
-                byte[] buffer = FileCopyUtils.copyToByteArray(file);
-                IOUtils.readFully(Files.newInputStream(file.toPath()), buffer);
-                HttpHeaders headers = new HttpHeaders();
-                headers.setContentType(MediaType.IMAGE_PNG);
-                ByteArrayResource resource = new ByteArrayResource(buffer);
-                return ResponseEntity.ok().headers(headers).contentLength(buffer.length).body(resource);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            Optional<File> safeFileOfSprites = FileUtils.getInstance(appConfig).getSafeFileOfSprites(spriteName, fileName, AppConfig.FILE_EXTENSION_NAME_PNG);
+            if (safeFileOfSprites.isPresent()) {
+                try {
+                    File file = safeFileOfSprites.get();
+                    byte[] buffer = FileCopyUtils.copyToByteArray(file);
+                    IOUtils.readFully(Files.newInputStream(file.toPath()), buffer);
+                    HttpHeaders headers = new HttpHeaders();
+                    headers.setContentType(MediaType.IMAGE_PNG);
+                    ByteArrayResource resource = new ByteArrayResource(buffer);
+                    return ResponseEntity.ok().headers(headers).contentLength(buffer.length).body(resource);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 }

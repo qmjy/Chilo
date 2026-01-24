@@ -41,13 +41,13 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * POI相关访问接口
+ * POI 相关访问接口
  *
  * @author liushaofeng
  */
 @RestController
 @RequestMapping("/api/poi")
-@Tag(name = "地图POI服务管理", description = "地图POI服务接口能力")
+@Tag(name = "地图POI 服务管理", description = "地图POI 服务接口能力")
 public class MapServerPOIRestController {
     private static final Logger logger = LoggerFactory.getLogger(MapServerPOIRestController.class);
     private final AppConfig appConfig;
@@ -57,11 +57,11 @@ public class MapServerPOIRestController {
     }
 
     /**
-     * POI搜索
+     * POI 搜索
      *
      * @param keywords POI关键字。目前只支持单个关键词
      * @param pageSize 返回的结果条数
-     * @return 查询到到的POI搜索结果
+     * @return 查询到到的POI 搜索结果
      */
     @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -97,12 +97,12 @@ public class MapServerPOIRestController {
     }
 
     /**
-     * POI搜索
+     * POI 搜索
      *
      * @param poiFile  待查询的瓦片数据文件名或POI文件名，例如chengdu.mbtiles或者chengdu.poi
      * @param keywords POI关键字。目前只支持单个关键词
      * @param pageSize 返回的结果条数
-     * @return 查询到到的POI搜索结果
+     * @return 查询到到的POI 搜索结果
      */
     @GetMapping(value = "/{poiIndexFile}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody

@@ -23,10 +23,7 @@ import io.github.qmjy.mapserver.config.AppConfig;
 import io.github.qmjy.mapserver.model.*;
 import io.github.qmjy.mapserver.model.osm.pbf.OsmPbfTileOfReadable;
 import io.github.qmjy.mapserver.service.AsyncService;
-import io.github.qmjy.mapserver.util.IOUtils;
-import io.github.qmjy.mapserver.util.ResponseMapUtil;
-import io.github.qmjy.mapserver.util.SystemUtils;
-import io.github.qmjy.mapserver.util.VectorTileUtils;
+import io.github.qmjy.mapserver.util.*;
 import io.github.sebasbaumh.mapbox.vectortile.adapt.jts.model.JtsMvt;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -56,7 +53,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
@@ -108,7 +104,7 @@ public class MapServerTilesetsRestController {
     @GetMapping(value = "/{tileset}/tiles.json", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Operation(summary = "获取瓦片集数据的元数据信息", description = "获取瓦片集数据的元数据信息")
-    public ResponseEntity<Map<String, Object>> getTilesJson(@Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") @PathVariable("tileset") String tileset) {
+    public ResponseEntity<Map<String, Object>> getTilesJson(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset) {
         AbstractTile tilesFileModel = mapServerDataCenter.getTilesFileModel(tileset);
         if (SystemUtils.checkTilesetName(tileset)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -145,17 +141,17 @@ public class MapServerTilesetsRestController {
      *
      * @param tileset 瓦片数据库名称
      * @param z       地图缩放层级
-     * @param x       地图的x轴瓦片坐标
-     * @param y       地图的y轴瓦片坐标
-     * @return jpg格式的瓦片数据
+     * @param x       地图的x 轴瓦片坐标
+     * @param y       地图的y 轴瓦片坐标
+     * @return jpg 格式的瓦片数据
      */
     @GetMapping(value = "/{tileset}/{z}/{x}/{y}.jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody
     @Operation(summary = "获取JPG 格式瓦片数据", description = "获取JPG格式瓦片数据。")
-    public ResponseEntity<ByteArrayResource> loadJpegTile(@Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") @PathVariable("tileset") String tileset,
-                                                          @Parameter(description = "待查询的底图瓦片层级zoom_level") @PathVariable("z") int z,
-                                                          @Parameter(description = "待查询的底图瓦片坐标x") @PathVariable("x") int x,
-                                                          @Parameter(description = "待查询的底图瓦片坐标y") @PathVariable("y") int y) {
+    public ResponseEntity<ByteArrayResource> loadJpegTile(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset,
+                                                          @PathVariable @Parameter(description = "待查询的底图瓦片层级zoom_level") int z,
+                                                          @PathVariable @Parameter(description = "待查询的底图瓦片坐标x") int x,
+                                                          @PathVariable @Parameter(description = "待查询的底图瓦片坐标y") int y) {
         if (SystemUtils.checkTilesetName(tileset)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -173,7 +169,7 @@ public class MapServerTilesetsRestController {
      */
     @GetMapping(value = "/{tileset}/{z}/{x}/{y}.jpg", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody
-    @Operation(summary = "获取JPG格式瓦片数据", description = "获取JPG格式瓦片数据。")
+    @Operation(summary = "获取JPG 格式瓦片数据", description = "获取JPG格式瓦片数据。")
     public ResponseEntity<ByteArrayResource> loadJpgTile(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset,
                                                          @PathVariable @Parameter(description = "待查询的底图瓦片层级zoom_level") int z,
                                                          @PathVariable @Parameter(description = "待查询的底图瓦片坐标x") int x,
@@ -201,7 +197,7 @@ public class MapServerTilesetsRestController {
      */
     @GetMapping(value = "/{tileset}/{z}/{x}/{y}.webp", produces = AppConfig.IMAGE_WEBP_VALUE)
     @ResponseBody
-    @Operation(summary = "获取WEBP格式瓦片数据", description = "获取WEBP格式瓦片数据。")
+    @Operation(summary = "获取WEBP 格式瓦片数据", description = "获取WEBP格式瓦片数据。")
     public ResponseEntity<ByteArrayResource> loadWebpTile(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset,
                                                           @PathVariable @Parameter(description = "待查询的底图瓦片层级zoom_level") int z,
                                                           @PathVariable @Parameter(description = "待查询的底图瓦片坐标x") int x,
@@ -232,7 +228,7 @@ public class MapServerTilesetsRestController {
      */
     @GetMapping(value = "/{tileset}/{z}/{x}/{y}.png", produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
-    @Operation(summary = "获取PNG格式瓦片数据", description = "获取PNG格式瓦片数据。")
+    @Operation(summary = "获取PNG 格式瓦片数据", description = "获取PNG格式瓦片数据。")
     public ResponseEntity<ByteArrayResource> loadPngTile(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset,
                                                          @PathVariable @Parameter(description = "待查询的底图瓦片层级zoom_level") int z,
                                                          @PathVariable @Parameter(description = "待查询的底图瓦片坐标x") int x,
@@ -320,17 +316,20 @@ public class MapServerTilesetsRestController {
             return getBytesFromSqlite(tileset, z, x, y, null);
         } else {
             if (!tileset.contains(".")) {
-                Path pbfPath = Path.of(appConfig.getDataPath(), "tilesets", tileset, String.valueOf(z), String.valueOf(x), y + AppConfig.FILE_EXTENSION_NAME_PBF);
-                if (Files.exists(pbfPath)) {
-                    try {
-                        AbstractTile tileModel = mapServerDataCenter.getTilesMap().get(tileset);
-                        byte[] value = FileCopyUtils.copyToByteArray(pbfPath.toFile());
-                        if (tileModel.isGzip()) {
-                            return Optional.of(IOUtils.unGzip(value));
+                Optional<File> safeFileOpt = FileUtils.getInstance(appConfig).getSafeFileOfPbfFile(tileset, String.valueOf(z), String.valueOf(x), String.valueOf(y));
+                if (safeFileOpt.isPresent()) {
+                    File file = safeFileOpt.get();
+                    if (file.exists()) {
+                        try {
+                            AbstractTile tileModel = mapServerDataCenter.getTilesMap().get(tileset);
+                            byte[] value = FileCopyUtils.copyToByteArray(file);
+                            if (tileModel.isGzip()) {
+                                return Optional.of(IOUtils.unGzip(value));
+                            }
+                            return Optional.of(value);
+                        } catch (IOException e) {
+                            logger.error("Load pbf file failed!");
                         }
-                        return Optional.of(value);
-                    } catch (IOException e) {
-                        logger.error("Load pbf file failed!");
                     }
                 }
             }
@@ -380,14 +379,16 @@ public class MapServerTilesetsRestController {
             }
         }
 
-        StringBuilder sb = new StringBuilder(appConfig.getDataPath());
-        sb.append(File.separator).append("tilesets").append(File.separator).append(tileset).append(File.separator).append("metadata.json");
-        if (new File(sb.toString()).exists()) {
-            try {
-                String s = Files.readString(Path.of(sb.toString()));
-                return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ResponseMapUtil.ok(s));
-            } catch (IOException e) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        Optional<File> safeFileOfMetadataFile = FileUtils.getInstance(appConfig).getSafeFileOfMetadataFile(tileset);
+        if (safeFileOfMetadataFile.isPresent()) {
+            File file = safeFileOfMetadataFile.get();
+            if (file.exists()) {
+                try {
+                    String s = Files.readString(file.toPath());
+                    return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ResponseMapUtil.ok(s));
+                } catch (IOException e) {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
             }
         }
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ResponseMapUtil.notFound());
@@ -449,10 +450,7 @@ public class MapServerTilesetsRestController {
             return new byte[0];
         }
 
-        if (!mediaType.equals(AppConfig.IMAGE_WEBP)
-                && !mediaType.equals(MediaType.IMAGE_GIF)
-                && !mediaType.equals(MediaType.IMAGE_PNG)
-                && !mediaType.equals(MediaType.IMAGE_JPEG)) {
+        if (!mediaType.equals(AppConfig.IMAGE_WEBP) && !mediaType.equals(MediaType.IMAGE_GIF) && !mediaType.equals(MediaType.IMAGE_PNG) && !mediaType.equals(MediaType.IMAGE_JPEG)) {
             logger.error("不支持的图片格式: {}", mediaType);
             return new byte[0];
         }

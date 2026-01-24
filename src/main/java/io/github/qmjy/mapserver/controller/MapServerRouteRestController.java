@@ -74,7 +74,7 @@ public class MapServerRouteRestController extends BaseController {
      */
     @GetMapping("/{osmpbf}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> route(@Parameter(description = "用于导航的osm.pbf文件名，例如：china-latest.osm.pbf") @PathVariable("osmpbf") String osmpbf,
+    public ResponseEntity<Map<String, Object>> route(@PathVariable @Parameter(description = "用于导航的osm.pbf文件名，例如：china-latest.osm.pbf") String osmpbf,
                                                      @Parameter(description = "待规划的起点经度坐标，例如：104.00504") @RequestParam(value = "startLongitude") double startLongitude,
                                                      @Parameter(description = "待规划的起点纬度坐标，例如：30.675252") @RequestParam(value = "startLatitude") double startLatitude,
                                                      @Parameter(description = "待规划的终点经度坐标，例如：104.068374") @RequestParam(value = "endLongitude") double endLongitude,

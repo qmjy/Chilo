@@ -5,7 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5c316ab-d96e-4d7e-80c6-3a1872deb891" name="Changes" comment="release v1.0.2">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/util/FileUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerAssetsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerAssetsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerFontsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerFontsController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerPOIRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerPOIRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerRouteRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerRouteRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerSpritesController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerSpritesController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerStyleController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerStyleController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerTilesetsRestController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerTilesetsRestController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerWebController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerWebController.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -362,7 +373,9 @@
       <workItem from="1768699182990" duration="13660000" />
       <workItem from="1768715083609" duration="942000" />
       <workItem from="1768716684029" duration="1778000" />
-      <workItem from="1768827016955" duration="166000" />
+      <workItem from="1768827016955" duration="850000" />
+      <workItem from="1769252909135" duration="491000" />
+      <workItem from="1769253409196" duration="5079000" />
     </task>
     <task id="LOCAL-00001" summary="更新版本依赖包；修改地理逆编码单多边形区域查询不到子区域的问题">
       <option name="closed" value="true" />

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 静态资源http服务器
+ * 静态资源http 服务器
  *
  * @author liushaofeng
  */

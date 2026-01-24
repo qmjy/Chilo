@@ -20,6 +20,7 @@ import io.github.qmjy.mapserver.MapServerDataCenter;
 import io.github.qmjy.mapserver.config.AppConfig;
 import io.github.qmjy.mapserver.model.AbstractTile;
 import io.github.qmjy.mapserver.model.TilesViewModel;
+import io.github.qmjy.mapserver.util.FileUtils;
 import io.github.qmjy.mapserver.util.SystemUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
@@ -34,10 +35,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 系统主页
@@ -110,7 +108,7 @@ public class MapServerWebController extends BaseController {
      * @return 地图预览页面
      */
     @GetMapping("/maplibre/{tileset}")
-    public String maplibre(@PathVariable("tileset") String tileset, HttpServletRequest request, Model model) {
+    public String maplibre(@PathVariable String tileset, HttpServletRequest request, Model model) {
         if (SystemUtils.checkTilesetName(tileset)) {
             return "error";
         }
@@ -128,27 +126,28 @@ public class MapServerWebController extends BaseController {
             Map<String, Object> tileMetaData = mapServerDataCenter.getTileMetaData(tileset);
             model.addAttribute("metaData", tileMetaData);
 
-            //在tpk中，MIXED— 将在包的中心使用 JPEG 格式，在包的边缘使用 PNG32。
             String format = tileMetaData.get("format").toString();
             return "jpg".equals(format) || "jpeg".equals(format) || "png".equals(format) || "webp".equals(format) || "tif".equals(format)
                     ? "maplibre-raster" : "maplibre-vector";
         } else {
-            StringBuilder sb = new StringBuilder(appConfig.getDataPath());
-            sb.append(File.separator).append("tilesets").append(File.separator).append(tileset).append(File.separator).append("metadata.json");
-            try {
-                String metaData = FileCopyUtils.copyToString(new FileReader(sb.toString()));
-                model.addAttribute("tilesetName", tileset);
-                model.addAttribute("metaData", metaData);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            Optional<File> safeFileOfMetadataFile = FileUtils.getInstance(appConfig).getSafeFileOfMetadataFile(tileset);
+            if (safeFileOfMetadataFile.isPresent()) {
+                try {
+                    String metaData = FileCopyUtils.copyToString(new FileReader(safeFileOfMetadataFile.get()));
+                    model.addAttribute("tilesetName", tileset);
+                    model.addAttribute("metaData", metaData);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                return "maplibre-pbf";
             }
-            return "maplibre-pbf";
         }
+        return "error";
     }
 
 
     /**
-     * 提供指定瓦片数据库的地图Openlayers预览页面
+     * 提供指定瓦片数据库的地图Openlayers 预览页面
      *
      * @param tileset 待预览的地图瓦片数据库库名称，默认为mbtiles扩展名
      * @param request HttpServletRequest
@@ -156,7 +155,7 @@ public class MapServerWebController extends BaseController {
      * @return 地图预览页面
      */
     @GetMapping("/openlayers/{tileset}")
-    public String openlayers(@PathVariable("tileset") String tileset, HttpServletRequest request, Model model) {
+    public String openlayers(@PathVariable String tileset, HttpServletRequest request, Model model) {
         if (SystemUtils.checkTilesetName(tileset)) {
             return "error";
         }
@@ -169,17 +168,19 @@ public class MapServerWebController extends BaseController {
 
             return "pbf".equals(tileMetaData.get("format")) ? "openlayers-vector" : "openlayers-raster";
         } else {
-            StringBuilder sb = new StringBuilder(appConfig.getDataPath());
-            sb.append(File.separator).append("tilesets").append(File.separator).append(tileset).append(File.separator).append("metadata.json");
-            try {
-                String metaData = FileCopyUtils.copyToString(new FileReader(sb.toString()));
-                model.addAttribute("tilesetName", tileset);
-                model.addAttribute("metaData", metaData);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            Optional<File> safeFileOfMetadataFile = FileUtils.getInstance(appConfig).getSafeFileOfMetadataFile(tileset);
+            if (safeFileOfMetadataFile.isPresent()) {
+                try {
+                    String metaData = FileCopyUtils.copyToString(new FileReader(safeFileOfMetadataFile.get()));
+                    model.addAttribute("tilesetName", tileset);
+                    model.addAttribute("metaData", metaData);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                return "openlayers-pbf";
             }
-            return "openlayers-pbf";
         }
+        return "error";
     }
 
 
@@ -205,9 +206,9 @@ public class MapServerWebController extends BaseController {
     }
 
     /**
-     * 展示Sprites列表
+     * 展示Sprites 列表
      *
-     * @return Sprites列表
+     * @return Sprites 列表
      */
     @GetMapping("/sprites")
     public String listSprites(Model model) {
@@ -225,9 +226,9 @@ public class MapServerWebController extends BaseController {
     }
 
     /**
-     * 展示style列表
+     * 展示style 列表
      *
-     * @return style列表
+     * @return style 列表
      */
     @GetMapping("/styles")
     public String listStyles(Model model) {

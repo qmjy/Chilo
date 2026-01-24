@@ -6,8 +6,7 @@
 > 寓意：将蜿蜒的江河道路比作“青罗带”，非常形象地描绘了地图上的线性要素，名字清新雅致，富有艺术感。
 
 青罗地图旨在提供地图服务能力，为私有化地图部署提供解决方案。  
-项目主要支持mbtiles、tpk格式的地图数据，其他支持的数据格式如下所示，其他的需要转换成mbtiles后使用。  
-项目启动后可以通过 http://localhost:10101/ 查看系统页面。
+项目主要支持mbtiles、tpk格式的地图数据，项目启动后可以通过 http://localhost:10101/ 查看系统页面。
 
 ## 特性列表
 
@@ -39,6 +38,8 @@ git clone git@github.com:qmjy/Chilo.git
 ```
 
 进入到代码目录执行命令编码源码：
+
+> 注意：如果您的目标运行环境为linux，则需要修改pom.xml中的javafx-graphics依赖的classifier为linux，并且确保目标操作系统安装有`mesa-libGL`组件。
 
 ```bash
 cd Chilo
