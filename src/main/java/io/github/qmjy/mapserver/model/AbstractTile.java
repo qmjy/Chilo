@@ -2,8 +2,6 @@ package io.github.qmjy.mapserver.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.qmjy.mapserver.spec.TileJSON;
-import io.github.qmjy.mapserver.spec.TileJSONV2;
-import io.github.qmjy.mapserver.spec.TileJSONV3;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,8 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 
 @Data

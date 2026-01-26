@@ -22,8 +22,6 @@ import io.github.qmjy.mapserver.spec.TileJSONV3;
 import lombok.Getter;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 public class TilesViewModel {

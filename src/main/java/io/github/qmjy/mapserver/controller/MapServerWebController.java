@@ -78,7 +78,7 @@ public class MapServerWebController extends BaseController {
     @GetMapping("/tools.html")
     public String tools(Model model, HttpServletRequest request) {
         model.addAttribute("basePath", super.getBasePath(request));
-        File[] tilesets = (File[]) mapServerDataCenter.getTilesMap().values().stream().map(item -> new File(item.getFilePath())).toArray(File[]::new);
+        File[] tilesets = mapServerDataCenter.getTilesMap().values().stream().map(item -> new File(item.getFilePath())).toArray(File[]::new);
         String selectTileset = "";
         if (tilesets.length > 0) {
             List<File> list = Arrays.stream(tilesets).filter(tileset -> tileset.getName().toLowerCase().contains("china")).toList();
