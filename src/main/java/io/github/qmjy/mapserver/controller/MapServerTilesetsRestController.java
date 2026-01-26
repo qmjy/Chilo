@@ -23,6 +23,7 @@ import io.github.qmjy.mapserver.config.AppConfig;
 import io.github.qmjy.mapserver.model.*;
 import io.github.qmjy.mapserver.model.osm.pbf.OsmPbfTileOfReadable;
 import io.github.qmjy.mapserver.service.AsyncService;
+import io.github.qmjy.mapserver.spec.TileJSON;
 import io.github.qmjy.mapserver.util.*;
 import io.github.sebasbaumh.mapbox.vectortile.adapt.jts.model.JtsMvt;
 import io.swagger.v3.oas.annotations.Operation;
@@ -104,7 +105,7 @@ public class MapServerTilesetsRestController {
     @GetMapping(value = "/{tileset}/tiles.json", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     @Operation(summary = "获取瓦片集数据的元数据信息", description = "获取瓦片集数据的元数据信息")
-    public ResponseEntity<Map<String, Object>> getTilesJson(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset) {
+    public ResponseEntity<Object> getTilesJson(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset) {
         AbstractTile tilesFileModel = mapServerDataCenter.getTilesFileModel(tileset);
         if (SystemUtils.checkTilesetName(tileset)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -114,26 +115,8 @@ public class MapServerTilesetsRestController {
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ResponseMapUtil.notFound());
         }
 
-        Map<String, Object> metaDataMap = tilesFileModel.getMetaDataMap();
-        Map<String, Object> data = new HashMap<>();
-        data.put("tilejson", "3.0.0");
-        data.put("tiles", metaDataMap.get("tiles"));
-        data.put("vector_layers", metaDataMap.get("json"));
-        data.put("bounds", metaDataMap.get("bounds"));
-        data.put("center", metaDataMap.get("center"));
-        data.put("data", metaDataMap.get("data"));
-        data.put("fillzoom", metaDataMap.get("fillzoom"));
-        data.put("grids", metaDataMap.get("grids"));
-        data.put("legend", metaDataMap.get("legend"));
-        data.put("maxzoom", metaDataMap.get("maxzoom"));
-        data.put("minzoom", metaDataMap.get("minzoom"));
-        data.put("name", metaDataMap.get("name"));
-        data.put("scheme", metaDataMap.get("scheme"));
-        data.put("template", metaDataMap.get("template"));
-        data.put("version", metaDataMap.get("version"));
-        data.put("description", metaDataMap.get("description"));
-        data.put("format", metaDataMap.get("format"));
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(data);
+        TileJSON tileJSON = tilesFileModel.getTileJSON();
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(tileJSON);
     }
 
     /**

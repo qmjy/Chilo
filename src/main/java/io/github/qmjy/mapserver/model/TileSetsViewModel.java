@@ -13,6 +13,6 @@ public class TileSetsViewModel {
         this.name = tilesFileModel.getName();
         this.tilesCount = tilesFileModel.getTilesCount();
         this.fileLength = tilesFileModel.getFileLength();
-        this.format = (String) tilesFileModel.getMetaDataMap().get("format");
+        this.format = tilesFileModel.getTileJSON().getFormat();
     }
 }

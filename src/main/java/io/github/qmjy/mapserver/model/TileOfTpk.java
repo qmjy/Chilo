@@ -5,6 +5,7 @@ import com.esri.arcgisruntime.arcgisservices.TileInfo;
 import com.esri.arcgisruntime.data.TileCache;
 import com.esri.arcgisruntime.geometry.Envelope;
 import com.esri.arcgisruntime.loadable.LoadStatus;
+import io.github.qmjy.mapserver.spec.TileJSONV3;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -43,14 +44,15 @@ public class TileOfTpk extends AbstractTile {
 
     @Override
     public boolean loadMetadata() {
+        this.tileJSON = new TileJSONV3();
         try {
             TileInfo tileInfo = tileCache.getTileInfo();
-            metaDataMap.put("format", convertTileFormat(tileInfo.getFormat()));
-            metaDataMap.put("minzoom", tileInfo.getLevelsOfDetail().getFirst().getLevel());
-            metaDataMap.put("maxzoom", tileInfo.getLevelsOfDetail().getLast().getLevel());
+            tileJSON.setFormat(convertTileFormat(tileInfo.getFormat()));
+            tileJSON.setMinzoom(tileInfo.getLevelsOfDetail().getFirst().getLevel());
+            tileJSON.setMaxzoom(tileInfo.getLevelsOfDetail().getLast().getLevel());
 
             Envelope fullExtent = tileCache.getFullExtent();
-            metaDataMap.put("bounds", fullExtent.getXMin() + "," + fullExtent.getYMin() + "," + fullExtent.getXMax() + "," + fullExtent.getYMax());
+            tileJSON.setBounds(new float[]{(float) fullExtent.getXMin(), (float) fullExtent.getYMin(), (float) fullExtent.getXMax(), (float) fullExtent.getYMax()});
             return true;
         } catch (RuntimeException e) {
             logger.error("Read tpk failed: {}", e.getMessage());
@@ -58,7 +60,7 @@ public class TileOfTpk extends AbstractTile {
         }
     }
 
-    private Object convertTileFormat(TileInfo.ImageFormat format) {
+    private String convertTileFormat(TileInfo.ImageFormat format) {
         return switch (format) {
             case TileInfo.ImageFormat.PNG, TileInfo.ImageFormat.PNG8, TileInfo.ImageFormat.PNG24, TileInfo.ImageFormat.PNG32 -> "png";
             case TileInfo.ImageFormat.JPG -> "jpg";

@@ -20,6 +20,7 @@ import io.github.qmjy.mapserver.MapServerDataCenter;
 import io.github.qmjy.mapserver.config.AppConfig;
 import io.github.qmjy.mapserver.model.AbstractTile;
 import io.github.qmjy.mapserver.model.TilesViewModel;
+import io.github.qmjy.mapserver.spec.TileJSON;
 import io.github.qmjy.mapserver.util.FileUtils;
 import io.github.qmjy.mapserver.util.SystemUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -84,7 +85,7 @@ public class MapServerWebController extends BaseController {
             selectTileset = !list.isEmpty() ? list.getFirst().getName() : tilesets[0].getName();
             model.addAttribute("tilesetName", selectTileset);
         }
-        Map<String, Object> tileMetaData = mapServerDataCenter.getTileMetaData(selectTileset);
+        TileJSON tileMetaData = mapServerDataCenter.getTileMetaData(selectTileset);
         model.addAttribute("metaData", tileMetaData);
         return "tools";
     }
@@ -114,19 +115,18 @@ public class MapServerWebController extends BaseController {
         }
 
         model.addAttribute("basePath", super.getBasePath(request));
+        TileJSON tileMetaData = mapServerDataCenter.getTileMetaData(tileset);
         if (tileset.endsWith(AppConfig.FILE_EXTENSION_NAME_MBTILES)) {
             model.addAttribute("tilesetName", tileset);
-            Map<String, Object> tileMetaData = mapServerDataCenter.getTileMetaData(tileset);
             model.addAttribute("metaData", tileMetaData);
 
-            return "pbf".equals(tileMetaData.get("format")) ? "maplibre-vector" : "maplibre-raster";
+            return "pbf".equals(tileMetaData.getFormat()) ? "maplibre-vector" : "maplibre-raster";
         }
         if (tileset.endsWith(AppConfig.FILE_EXTENSION_NAME_TPK)) {
             model.addAttribute("tilesetName", tileset);
-            Map<String, Object> tileMetaData = mapServerDataCenter.getTileMetaData(tileset);
             model.addAttribute("metaData", tileMetaData);
 
-            String format = tileMetaData.get("format").toString();
+            String format = tileMetaData.getFormat();
             return "jpg".equals(format) || "jpeg".equals(format) || "png".equals(format) || "webp".equals(format) || "tif".equals(format)
                     ? "maplibre-raster" : "maplibre-vector";
         } else {
@@ -163,10 +163,10 @@ public class MapServerWebController extends BaseController {
         model.addAttribute("basePath", super.getBasePath(request));
         if (tileset.endsWith(AppConfig.FILE_EXTENSION_NAME_MBTILES)) {
             model.addAttribute("tilesetName", tileset);
-            Map<String, Object> tileMetaData = mapServerDataCenter.getTileMetaData(tileset);
+            TileJSON tileMetaData = mapServerDataCenter.getTileMetaData(tileset);
             model.addAttribute("metaData", tileMetaData);
 
-            return "pbf".equals(tileMetaData.get("format")) ? "openlayers-vector" : "openlayers-raster";
+            return "pbf".equals(tileMetaData.getFormat()) ? "openlayers-vector" : "openlayers-raster";
         } else {
             Optional<File> safeFileOfMetadataFile = FileUtils.getInstance(appConfig).getSafeFileOfMetadataFile(tileset);
             if (safeFileOfMetadataFile.isPresent()) {
@@ -254,7 +254,7 @@ public class MapServerWebController extends BaseController {
             AbstractTile tilesFileModel = mapServerDataCenter.getTilesMap().get(file.getName());
             if (tilesFileModel != null) {
                 // 大mbtiles文件可能加载还未就绪
-                dataList.add(new TilesViewModel(file, tilesFileModel.getMetaDataMap()));
+                dataList.add(new TilesViewModel(file, tilesFileModel.getTileJSON()));
             }
         }
         return dataList;

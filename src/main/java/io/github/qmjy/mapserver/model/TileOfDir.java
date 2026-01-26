@@ -31,12 +31,10 @@ public class TileOfDir extends AbstractTile {
             String tilejson = objectMapper.readValue(jsonData, Map.class).get("tilejson").toString();
 
             if ("2.0.0".equals(tilejson)) {
-                TileJSONV2 tileJSON = objectMapper.readValue(jsonData, TileJSONV2.class);
-                initMetadataMap(tileJSON);
+                this.tileJSON = objectMapper.readValue(jsonData, TileJSONV2.class);
                 return true;
             } else if ("3.0.0".equals(tilejson)) {
-                TileJSONV3 tileJSON = objectMapper.readValue(jsonData, TileJSONV3.class);
-                initMetadataMap(tileJSON);
+                this.tileJSON = objectMapper.readValue(jsonData, TileJSONV3.class);
                 return true;
             } else {
                 logger.error("Unsupported tilejson version: {}", tilejson);
@@ -86,42 +84,5 @@ public class TileOfDir extends AbstractTile {
     @Override
     public boolean releaseResource() {
         return false;
-    }
-
-
-    private void initMetadataMap(TileJSONV2 tileJSON) {
-        metaDataMap.put("tilejson", tileJSON.getTilejson());
-        metaDataMap.put("scheme", tileJSON.getScheme());
-        metaDataMap.put("type", tileJSON.getType());
-        metaDataMap.put("format", tileJSON.getFormat());
-        metaDataMap.put("tiles", tileJSON.getTiles());
-        metaDataMap.put("bounds", tileJSON.getBounds());
-        metaDataMap.put("name", tileJSON.getName());
-        metaDataMap.put("version", tileJSON.getVersion());
-        metaDataMap.put("description", tileJSON.getDescription());
-        metaDataMap.put("minzoom", tileJSON.getMinzoom());
-        metaDataMap.put("maxzoom", tileJSON.getMaxzoom());
-        metaDataMap.put("attribution", tileJSON.getAttribution());
-        metaDataMap.put("vector_layers", tileJSON.getVector_layers());
-    }
-
-    private void initMetadataMap(TileJSONV3 tileJSON) {
-        metaDataMap.put("tilejson", tileJSON.getTilejson());
-        metaDataMap.put("tiles", tileJSON.getTiles());
-        metaDataMap.put("vector_layers", tileJSON.getVector_layers());
-        metaDataMap.put("attribution", tileJSON.getAttribution());
-        metaDataMap.put("bounds", tileJSON.getBounds());
-        metaDataMap.put("center", tileJSON.getCenter());
-        metaDataMap.put("data", tileJSON.getData());
-        metaDataMap.put("description", tileJSON.getDescription());
-        metaDataMap.put("fillzoom", tileJSON.getFillzoom());
-        metaDataMap.put("grids", tileJSON.getGrids());
-        metaDataMap.put("legend", tileJSON.getLegend());
-        metaDataMap.put("maxzoom", tileJSON.getMaxzoom());
-        metaDataMap.put("minzoom", tileJSON.getMinzoom());
-        metaDataMap.put("name", tileJSON.getName());
-        metaDataMap.put("scheme", tileJSON.getScheme());
-        metaDataMap.put("template", tileJSON.getTemplate());
-        metaDataMap.put("version", tileJSON.getVersion());
     }
 }

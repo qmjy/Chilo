@@ -1,6 +1,9 @@
 package io.github.qmjy.mapserver.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.qmjy.mapserver.spec.TileJSON;
+import io.github.qmjy.mapserver.spec.TileJSONV2;
+import io.github.qmjy.mapserver.spec.TileJSONV3;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +28,8 @@ public abstract class AbstractTile {
     public static final int TILE_FILE_TYPE_OF_VTPK = 3;
     public static final int TILE_FILE_TYPE_OF_DIRECTORY = 4;
 
-    protected final Map<String, Object> metaDataMap = new HashMap<>();
+    protected TileJSON tileJSON;
+
     protected String name;
     protected long tilesCount = -1;
     protected long fileLength = 0L;

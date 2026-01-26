@@ -102,11 +102,7 @@ public class ResponseMapUtil {
      * @return 找不到资源的相应消息
      */
     public static Map<String, Object> notFound(String msg) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("code", STATUS_NOT_FOUND);
-        map.put("msg", msg);
-        map.put("data", "");
-        return map;
+        return nok(STATUS_NOT_FOUND, msg);
     }
 
     /**

@@ -1,16 +1,19 @@
 package io.github.qmjy.mapserver.model;
 
 import com.zaxxer.hikari.HikariDataSource;
+import io.github.qmjy.mapserver.spec.TileJSONV3;
 import io.github.qmjy.mapserver.util.IOUtils;
 import io.github.qmjy.mapserver.util.JdbcUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -34,10 +37,45 @@ public class TileOfMbtiles extends AbstractTile {
 
     @Override
     public boolean loadMetadata() {
+        this.tileJSON = new TileJSONV3();
+
         try {
             List<Map<String, Object>> mapList = jdbcTemplate.queryForList("SELECT * FROM metadata");
             for (Map<String, Object> map : mapList) {
-                metaDataMap.put(String.valueOf(map.get("name")), map.get("value"));
+                String key = map.get("name").toString();
+                String value = map.get("value").toString();
+                switch (key) {
+                    case "name":
+                        tileJSON.setName(value);
+                        break;
+                    case "description":
+                        tileJSON.setDescription(value);
+                        break;
+                    case "version":
+                        tileJSON.setVersion(value);
+                        break;
+                    case "attribution":
+                        tileJSON.setAttribution(value);
+                        break;
+                    case "scheme":
+                        tileJSON.setScheme(value);
+                        break;
+                    case "minzoom":
+                        tileJSON.setMinzoom(Integer.parseInt(value));
+                        break;
+                    case "maxzoom":
+                        tileJSON.setMaxzoom(Integer.parseInt(value));
+                        break;
+                    case "bounds":
+                        Float[] floatObjArray = Arrays.stream(value.split(","))
+                                .map(Float::valueOf).toArray(Float[]::new);
+                        float[] primitive = ArrayUtils.toPrimitive(floatObjArray);
+                        tileJSON.setBounds(primitive);
+                        break;
+                    case "format":
+                        tileJSON.setFormat(value);
+                        break;
+                }
             }
             return true;
         } catch (DataAccessException e) {

@@ -24,6 +24,7 @@ import eu.smartdatalake.athenarc.osmwrangle.utils.Configuration;
 import io.github.qmjy.mapserver.MapServerDataCenter;
 import io.github.qmjy.mapserver.config.AppConfig;
 import io.github.qmjy.mapserver.model.*;
+import io.github.qmjy.mapserver.spec.TileJSON;
 import io.github.qmjy.mapserver.util.IOUtils;
 import io.github.qmjy.mapserver.util.JdbcUtils;
 import io.github.qmjy.mapserver.util.VectorTileUtils;
@@ -129,8 +130,8 @@ public class AsyncService {
      */
     @Async("asyncServiceExecutor")
     public void asyncMbtilesToPOI(File tilesetFile) {
-        Map<String, Object> tileMetaData = mapServerDataCenter.getTileMetaData(tilesetFile.getName());
-        if ("pbf".equals(tileMetaData.get("format")) || "mvt".equals(tileMetaData.get("format"))) {
+        TileJSON tileMetaData = mapServerDataCenter.getTileMetaData(tilesetFile.getName());
+        if ("pbf".equals(tileMetaData.getFormat()) || "mvt".equals(tileMetaData.getFormat())) {
             String idxFilePath = tilesetFile.getAbsolutePath() + ".idx";
             if (!new File(idxFilePath).exists()) {
                 JdbcTemplate idxJdbcTemp = JdbcUtils.getInstance().getJdbcTemplate(appConfig.getDriverClassName(), idxFilePath);
@@ -146,7 +147,7 @@ public class AsyncService {
 
     private void extractPoi2Idx(AbstractTile tilesFileModel, JdbcTemplate idxJdbcTemp) {
         //只从最高层级解析POI数据
-        String maxZoom = (String) tilesFileModel.getMetaDataMap().get("maxzoom");
+        String maxZoom = tilesFileModel.getTileJSON().getMaxzoom()+"";
         if (tilesFileModel instanceof TileOfMbtiles tileModel) {
             JdbcTemplate jdbcTemplate = tileModel.getJdbcTemplate();
 

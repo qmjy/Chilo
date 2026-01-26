@@ -16,6 +16,9 @@
 
 package io.github.qmjy.mapserver.model;
 
+import io.github.qmjy.mapserver.spec.TileJSON;
+import io.github.qmjy.mapserver.spec.TileJSONV2;
+import io.github.qmjy.mapserver.spec.TileJSONV3;
 import lombok.Getter;
 
 import java.io.File;
@@ -27,7 +30,8 @@ public class TilesViewModel {
     private final String name;
     private final String type;
     private final String fileSize;
-    private Map<String, Object> metaDataMap = new HashMap<>();
+    private TileJSONV3 tileJSONV3;
+    private TileJSONV2 tileJSONV2;
 
     /**
      * 构造方法
@@ -41,9 +45,16 @@ public class TilesViewModel {
         this.fileSize = file.isDirectory() ? "" : formatFileSize(file.length());
     }
 
-    public TilesViewModel(File file, Map<String, Object> metaDataMap) {
+    public TilesViewModel(File file, TileJSON tileJSON) {
         this(file);
-        this.metaDataMap = metaDataMap;
+
+        if (tileJSON instanceof TileJSONV3 v3) {
+            this.tileJSONV3 = v3;
+        }
+
+        if (tileJSON instanceof TileJSONV2 v2) {
+            this.tileJSONV2 = v2;
+        }
     }
 
 

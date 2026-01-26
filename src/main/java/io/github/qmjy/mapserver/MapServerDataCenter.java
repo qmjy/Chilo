@@ -19,6 +19,7 @@ package io.github.qmjy.mapserver;
 import com.graphhopper.GraphHopper;
 import io.github.qmjy.mapserver.config.AppConfig;
 import io.github.qmjy.mapserver.model.*;
+import io.github.qmjy.mapserver.spec.TileJSON;
 import lombok.Getter;
 import lombok.Setter;
 import org.geotools.api.data.FileDataStore;
@@ -418,14 +419,14 @@ public class MapServerDataCenter {
      * @param fileName 瓦片数据库文件名
      * @return 瓦片元数据
      */
-    public Map<String, Object> getTileMetaData(String fileName) {
+    public TileJSON getTileMetaData(String fileName) {
         if (StringUtils.hasLength(fileName)) {
             AbstractTile model = tilesMap.get(fileName);
             if (model != null) {
-                return model.getMetaDataMap();
+                return model.getTileJSON();
             }
         }
-        return new HashMap<>();
+        return null;
     }
 
 
