@@ -5,11 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b5c316ab-d96e-4d7e-80c6-3a1872deb891" name="Changes" comment="优化tilejson数据获取和存储方式">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerWebController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/controller/MapServerWebController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/model/AbstractTile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/model/AbstractTile.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/model/TilesViewModel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/model/TilesViewModel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/spec/TileJSON.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/io/github/qmjy/mapserver/spec/TileJSON.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/maplibre-vector.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/maplibre-vector.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/openlayers-vector.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/templates/openlayers-vector.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,54 +59,54 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "Application.Application.executor": "Debug",
-    "Application.GeoJsonToMvtTiler.executor": "Run",
-    "Application.Main.executor": "Run",
-    "Application.TEST.executor": "Run",
-    "JUnit.ImageGeoreferencerTest.testTransformImageToGeo.executor": "Run",
-    "Maven.Chilo [clean].executor": "Run",
-    "Maven.Chilo [compile].executor": "Run",
-    "Maven.Chilo [org.apache.maven.plugins:maven-clean-plugin:3.3.2:clean].executor": "Run",
-    "Maven.Chilo [org.apache.maven.plugins:maven-clean-plugin:3.3.2:help].executor": "Run",
-    "Maven.Chilo [org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile].executor": "Run",
-    "Maven.Chilo [package].executor": "Run",
-    "Maven.Chilo [validate].executor": "Run",
-    "Maven.chilo [clean].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "Spring Boot.Application.executor": "Debug",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.includeInheritedMembers": "true",
-    "git-widget-placeholder": "main",
-    "ignore.preview.features.used": "true",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "F:/SourceCode/github/qmjy/Chilo/pom.xml",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.5367816",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "to.speed.mode.migration.done": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;Application.Application.executor&quot;: &quot;Debug&quot;,
+    &quot;Application.GeoJsonToMvtTiler.executor&quot;: &quot;Run&quot;,
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TEST.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.ImageGeoreferencerTest.testTransformImageToGeo.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Chilo [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Chilo [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Chilo [org.apache.maven.plugins:maven-clean-plugin:3.3.2:clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Chilo [org.apache.maven.plugins:maven-clean-plugin:3.3.2:help].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Chilo [org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Chilo [package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.Chilo [validate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chilo [clean].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;Spring Boot.Application.executor&quot;: &quot;Debug&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
+    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.includeInheritedMembers&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.preview.features.used&quot;: &quot;true&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;F:/SourceCode/github/qmjy/Chilo/pom.xml&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.5367816&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="E:\SourceCode\github\qmjy\Chilo\src\test\resources" />
@@ -371,7 +371,8 @@
       <workItem from="1769253409196" duration="5800000" />
       <workItem from="1769259300795" duration="256000" />
       <workItem from="1769342068082" duration="5000" />
-      <workItem from="1769433844611" duration="4653000" />
+      <workItem from="1769433844611" duration="4796000" />
+      <workItem from="1769696671182" duration="1483000" />
     </task>
     <task id="LOCAL-00001" summary="更新版本依赖包；修改地理逆编码单多边形区域查询不到子区域的问题">
       <option name="closed" value="true" />

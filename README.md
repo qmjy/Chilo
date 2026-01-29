@@ -93,6 +93,7 @@ data
 
 ### 地图瓦片数据（mbtiles）
 
+- 河北省-250128：https://cloud.189.cn/web/share?code=iMzYNvfiEbIb（访问码：2p84）
 - 四川省-240818: https://cloud.189.cn/web/share?code=VrmEFbiQRn6n（访问码：qzv1）  
 - 广西省-241025: https://cloud.189.cn/web/share?code=jERjmaNFNRVv（访问码：6ye6）  
 - 中国-240127: https://cloud.189.cn/web/share?code=qaqi227NnAJj（访问码：5xyc）  

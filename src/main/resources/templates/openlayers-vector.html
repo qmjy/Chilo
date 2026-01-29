@@ -208,16 +208,18 @@
             }),
         });
 
-        const center = JSON.parse(result.center);
-        const map = new ol.Map({
-            target: 'map',
-            view: new ol.View({
-                center: ol.proj.fromLonLat([center[0], center[1]]),
-                zoom: center[2],
-                projection: 'EPSG:3857'
-            }),
-            layers: [vtLayer, boundary]
-        });
+        if (result.center) {
+            const center = JSON.parse(result.center);
+            const map = new ol.Map({
+                target: 'map',
+                view: new ol.View({
+                    center: ol.proj.fromLonLat([center[0], center[1]]),
+                    zoom: center[2],
+                    projection: 'EPSG:3857'
+                }),
+                layers: [vtLayer, boundary]
+            });
+        }
 
         // 如果 GeoJSON 文件使用的坐标系不是 EPSG:3857，你可能需要添加一个变换
         boundary.getSource().on('addfeature', function (event) {

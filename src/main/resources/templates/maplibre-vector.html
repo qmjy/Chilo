@@ -39,7 +39,7 @@
                         "scheme": scheme,
                         "type": "vector",
                         "tiles": [`${hostUrl}/api/tilesets/${tileName}/{z}/{x}/{y}.${result.format}`],
-                        "bounds": result.bounds.split(",").map(Number),
+                        "bounds": result.bounds,
                         "minzoom": parseInt(result.minzoom),
                         "maxzoom": parseInt(result.maxzoom),
                         "attribution":
