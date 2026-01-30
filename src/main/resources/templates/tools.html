@@ -24,7 +24,7 @@
     <script src="/static/assets/maplibre-gl-js/v5.0.1/maplibre-gl.js"></script>
     <script src="/static/assets/maplibre-gl-measures/v0.0.16/maplibre-gl-measures.js"></script>
     <script src='/static/assets/maplibre-gl-inspect/v1.7.1/maplibre-gl-inspect.js'></script>
-    <link href='/static/assets/maplibre-gl-inspect/v1.7.1/maplibre-gl-inspect.css' rel='stylesheet' />
+    <link href='/static/assets/maplibre-gl-inspect/v1.7.1/maplibre-gl-inspect.css' rel='stylesheet'/>
     <script>
         const config = {
             MAPTILER_TOKEN: 'YymZPIGfniu7apIvln6X',
@@ -46,7 +46,7 @@
             width: 100%;
         }
 
-        .maplibregl-ctrl-bottom-left .maplibregl-ctrl{
+        .maplibregl-ctrl-bottom-left .maplibregl-ctrl {
             margin: 0 0 10px 200px;
         }
 
@@ -89,7 +89,7 @@
             bottom: 0;
             background-color: #ccc;
             -webkit-transition: .4s;
-            transition: .4s cubic-bezier(0,1,0.5,1);
+            transition: .4s cubic-bezier(0, 1, 0.5, 1);
             border-radius: 1px;
         }
 
@@ -102,7 +102,7 @@
             bottom: 4px;
             background-color: white;
             -webkit-transition: .4s;
-            transition: .4s cubic-bezier(0,1,0.5,1);
+            transition: .4s cubic-bezier(0, 1, 0.5, 1);
             border-radius: 3px;
         }
 
@@ -132,7 +132,7 @@
 <script>
     let maplibreglMap, showGrid = false;
 
-    function toggleGrid(){
+    function toggleGrid() {
         showGrid = !showGrid;
         maplibreglMap.showTileBoundaries = showGrid
     }
@@ -202,10 +202,10 @@
                     "osm-tiles": {
                         "scheme": "tms",
                         "type": "vector",
-                        "tiles": [basePath + "/api/tilesets/" + data.name + "/{z}/{x}/{y}." + data.metaDataMap.format],
-                        "bounds": data.metaDataMap.bounds.split(",").map(Number),
-                        "minzoom": parseInt(data.metaDataMap.minzoom),
-                        "maxzoom": parseInt(data.metaDataMap.maxzoom),
+                        "tiles": [basePath + "/api/tilesets/" + data.name + "/{z}/{x}/{y}." + data.tileJSON.format],
+                        "bounds": data.tileJSON.bounds,
+                        "minzoom": data.tileJSON.minzoom,
+                        "maxzoom": data.tileJSON.maxzoom,
                         "attribution":
                             '<a href="https://github.com/qmjy/Chilo">Github</a> | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     }
@@ -219,7 +219,7 @@
         renderVector(maplibreglMap);
         bindEventShowCenter(maplibreglMap);
 
-        var styles = (MapLibreStyleDefinition = [
+        const styles = (MapLibreStyleDefinition = [
             {
                 title: "Demotiles",
                 uri: "https://demotiles.maplibre.org/style.json",
