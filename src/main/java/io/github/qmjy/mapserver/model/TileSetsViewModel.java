@@ -8,6 +8,7 @@ public class TileSetsViewModel {
     private final String name;
     private final long tilesCount;
     private final long fileLength;
+    private final String format;
 
     private final TileJSON tileJSON;
 
@@ -16,5 +17,6 @@ public class TileSetsViewModel {
         this.tilesCount = tilesFileModel.getTilesCount();
         this.fileLength = tilesFileModel.getFileLength();
         this.tileJSON = tilesFileModel.getTileJSON();
+        this.format = tilesFileModel.getTileJSON().getFormat();
     }
 }
