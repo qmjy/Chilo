@@ -2,6 +2,8 @@ package io.github.qmjy.mapserver.spec;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class TileJSON {
     /**
@@ -77,7 +79,7 @@ public class TileJSON {
     private float[] bounds;
 
 
-    private VectorLayer[] vector_layers;
+    private List<VectorLayer> vector_layers;
 
     /**
      * OPTIONAL. Array. Default: null.

@@ -1,7 +1,10 @@
 package io.github.qmjy.mapserver.model;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zaxxer.hikari.HikariDataSource;
 import io.github.qmjy.mapserver.spec.TileJSONV3;
+import io.github.qmjy.mapserver.spec.VectorLayer;
 import io.github.qmjy.mapserver.util.IOUtils;
 import io.github.qmjy.mapserver.util.JdbcUtils;
 import lombok.Data;
@@ -54,6 +57,10 @@ public class TileOfMbtiles extends AbstractTile {
                     case "version":
                         tileJSON.setVersion(value);
                         break;
+                    case "center":
+                        Float[] array = Arrays.stream(value.split(",")).map(Float::valueOf).toArray(Float[]::new);
+                        tileJSON.setCenter(ArrayUtils.toPrimitive(array));
+                        break;
                     case "attribution":
                         tileJSON.setAttribution(value);
                         break;
@@ -66,11 +73,13 @@ public class TileOfMbtiles extends AbstractTile {
                     case "maxzoom":
                         tileJSON.setMaxzoom(Integer.parseInt(value));
                         break;
+                    case "json":
+                        tileJSON.setVector_layers(convertVec(value));
+                        break;
                     case "bounds":
                         Float[] floatObjArray = Arrays.stream(value.split(","))
                                 .map(Float::valueOf).toArray(Float[]::new);
-                        float[] primitive = ArrayUtils.toPrimitive(floatObjArray);
-                        tileJSON.setBounds(primitive);
+                        tileJSON.setBounds(ArrayUtils.toPrimitive(floatObjArray));
                         break;
                     case "format":
                         tileJSON.setFormat(value);
@@ -81,6 +90,22 @@ public class TileOfMbtiles extends AbstractTile {
         } catch (DataAccessException e) {
             logger.error("Load map meta data failed: {}", filePath);
             return false;
+        }
+    }
+
+    private List<VectorLayer> convertVec(String value) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, Object> rootMap = objectMapper.readValue(value, new TypeReference<Map<String, Object>>() {
+            });
+            Object layersObj = rootMap.get("vector_layers");
+            // 将 vector_layers 数组转换为 List<VectorLayer>
+            return objectMapper.convertValue(layersObj, new TypeReference<List<VectorLayer>>() {
+                    }
+            );
+        } catch (Exception e) {
+            logger.error("Parse vector_layers failed: {}", filePath);
+            return null;
         }
     }
 
