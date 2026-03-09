@@ -89,19 +89,11 @@ public class AppConfig {
     @Value("${osmwrangle.outputDir}")
     private String outputDir;
 
-
     /**
      * 从mvt的pbf提取poi数据
      */
     @Value("${enable-poi-extract-mvt}")
     private boolean enablePoiExtractMvt = false;
-
-
-    /**
-     * 从osm.pbf提取poi数据
-     */
-    @Value("${enable-poi-extract-osm-pbf}")
-    private boolean enablePoiExtractOsmPbf = false;
 
     /**
      * 启用路径规划

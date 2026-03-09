@@ -48,7 +48,6 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
                 wrapFontsFile(dataFolder);
                 wrapOSMBFile(dataFolder);
                 wrapMapFile(dataFolder);
-                wrapOsmPbfFile(dataFolder);
                 indexPoi(dataFolder);
             }
         }
@@ -61,22 +60,6 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
             for (File csvFile : files) {
                 logger.info("Index poi file: {}", csvFile.getName());
                 asyncService.indexPoi(csvFile);
-            }
-        }
-    }
-
-    private void wrapOsmPbfFile(File dataFolder) {
-        File tilesetsFolder = new File(dataFolder, "osm.pbf");
-        File[] files = tilesetsFolder.listFiles(file -> file.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_OSM_PBF) && !file.isDirectory());
-        if (files != null) {
-            for (File dbFile : files) {
-                logger.info("Load osm.pbf file: {}", dbFile.getName());
-                if (appConfig.isEnablePlanning()) {
-                    asyncService.loadOsmPbfRoute(dbFile);
-                }
-                if (appConfig.isEnablePoiExtractOsmPbf()) {
-                    asyncService.loadOsmPbfPoi(dbFile);
-                }
             }
         }
     }

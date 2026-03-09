@@ -18,9 +18,6 @@ package io.github.qmjy.mapserver.service;
 
 import com.graphhopper.GraphHopper;
 import com.graphhopper.config.Profile;
-
-import eu.smartdatalake.athenarc.osmwrangle.tools.OsmPbfParser;
-import eu.smartdatalake.athenarc.osmwrangle.utils.Configuration;
 import io.github.qmjy.mapserver.MapServerDataCenter;
 import io.github.qmjy.mapserver.config.AppConfig;
 import io.github.qmjy.mapserver.model.*;
@@ -90,27 +87,6 @@ public class AsyncService {
         hopper.setProfiles(new Profile("car").setVehicle("car").setTurnCosts(false), new Profile("bike").setVehicle("bike").setTurnCosts(false), new Profile("foot").setVehicle("foot").setTurnCosts(false));
         hopper.importOrLoad();
         MapServerDataCenter.getInstance().initHopper(osmPbfFile.getName(), hopper);
-    }
-
-    /**
-     * 提取osm.pbf的poi数据。<br/>
-     * thanks for the project：<a href="https://github.com/SLIPO-EU/OSMWrangle">OSMWrangle</a>
-     *
-     * @param osmPbfFile 待提取数据的osm.pbf数据
-     */
-    @Async("asyncServiceExecutor")
-    public void loadOsmPbfPoi(File osmPbfFile) {
-        Configuration currentConfig = new Configuration(osmPbfFile, appConfig);
-
-        System.setProperty("org.geotools.referencing.forceXY", "true");
-
-        String outFile = currentConfig.outputDir + IOUtils.getBaseName(currentConfig.inputFiles) + ".nt";
-
-        int sourceSRID = 0;
-        int targetSRID = 0;
-        OsmPbfParser conv = new OsmPbfParser(currentConfig, osmPbfFile.getAbsolutePath(), outFile, sourceSRID, targetSRID);
-        conv.apply();
-        conv.close();
     }
 
     @NotNull
