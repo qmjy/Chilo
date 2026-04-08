@@ -118,4 +118,10 @@ public class TileJSON {
      * Custom Properties
      **/
     private String format;
+
+
+    /**
+     * 非官方属性
+     */
+    private String type;
 }

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.nio.file.Paths;
 
 @Component
 @Order(value = 1)
@@ -134,7 +135,7 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
     }
 
     private void wrapFontsFile(File dataFolder) {
-        File tilesetsFolder = new File(dataFolder, "fonts");
+        File tilesetsFolder = Paths.get(dataFolder.getPath(), "assets", "fonts").toFile();
         File[] files = tilesetsFolder.listFiles();
         if (files != null) {
             for (File fontFolder : files) {

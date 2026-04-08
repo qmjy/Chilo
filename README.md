@@ -64,27 +64,29 @@ java -jar Chilo-xxx.jar --dataPath="your data path"
 ```bash
 data
 ├─assets
-│      mapbox-gl.css
-│      mapbox-gl.js
-├─fonts
-│  └─Arial Regular
-│         0-255.pbf
-│         15616-15871.pbf
-│         15872-16127.pbf
-├─sprites
-│  └─streets
-│         sprite.json
-│         sprite.png
-│         sprite@2x.json
-│         sprite@2x.png
+│  ├─others
+│  ├─fonts
+│  │  └─Arial Regular
+│  │         0-255.pbf
+│  │         15616-15871.pbf
+│  │         15872-16127.pbf
+│  └─sprites
+│     └─streets
+│            sprite.json
+│            sprite.png
+│            sprite@2x.json
+│            sprite@2x.png
 ├─styles
 │      world.json
 ├─poi
 │      xxx.osm.poi
 ├─osm.pbf
 │      Chengdu.osm.pbf
+├─gpkg
+│      chengdu.gpkg
 ├─tilesets
 │      Chengdu.mbtiles
+│      Chengdu.tpk
 └─OSMB
        China.geojson
 ```

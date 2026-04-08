@@ -25,7 +25,7 @@ public final class FileUtils {
     }
 
     public Optional<File> getSafeFileOfSprites(String spritesName, String fileName, String fileExtension) {
-        Path basePath = Paths.get(BASEPATH).normalize();
+        Path basePath = Paths.get(BASEPATH, "assets").normalize();
         Path requestedPath = basePath.resolve("sprites").resolve(spritesName).resolve(fileName + fileExtension).normalize();
         return getSafeFile(requestedPath);
     }
