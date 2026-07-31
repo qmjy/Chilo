@@ -48,6 +48,16 @@ public abstract class AbstractTile {
 
     public abstract int getTileFileType();
 
+    /**
+     * 根据 Zoom/X/Y 查询瓦片数据
+     *
+     * @param zoom 层级
+     * @param x    列
+     * @param y    行
+     * @return 原始 PBF 字节流，如果不存在则返回 null
+     */
+    public abstract byte[] getTile(int zoom, int x, int y);
+
     public abstract void countSize();
 
     public abstract boolean isCompressed();

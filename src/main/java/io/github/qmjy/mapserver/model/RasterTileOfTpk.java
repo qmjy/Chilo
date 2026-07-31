@@ -13,11 +13,11 @@ import java.io.File;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class TileOfTpk extends AbstractTile {
+public class RasterTileOfTpk extends AbstractTile {
     private TileCache tileCache;
     private boolean loaded = false;
 
-    public TileOfTpk(File tpk) {
+    public RasterTileOfTpk(File tpk) {
         super(tpk.getAbsolutePath());
         this.fileLength = tpk.length();
 
@@ -25,6 +25,7 @@ public class TileOfTpk extends AbstractTile {
         this.tileCache.loadAsync();
         this.tileCache.addDoneLoadingListener(() -> {
             if (tileCache.getLoadStatus() == LoadStatus.LOADED) {
+                logger.error("The tpk file is loaded: {}", tpk.getName());
                 if (loadMetadata()) {
                     this.valid = true;
                 }
@@ -75,6 +76,11 @@ public class TileOfTpk extends AbstractTile {
     @Override
     public int getTileFileType() {
         return TILE_FILE_TYPE_OF_TPK;
+    }
+
+    @Override
+    public byte[] getTile(int zoom, int x, int y) {
+        return new byte[0];
     }
 
     @Override

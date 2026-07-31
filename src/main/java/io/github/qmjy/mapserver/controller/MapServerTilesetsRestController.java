@@ -493,7 +493,7 @@ public class MapServerTilesetsRestController {
 
     private Optional<byte[]> getBytesFromTpk(String tileset, int zoom, int column, int row, MediaType defaultMediaType) {
         AbstractTile tileModel = mapServerDataCenter.getTilesMap().get(tileset);
-        if (tileModel instanceof TileOfTpk tilesFileModel) {
+        if (tileModel instanceof RasterTileOfTpk tilesFileModel) {
             TileCache tileCache = tilesFileModel.getTileCache();
             byte[] tileData = tileCache.getTileData(new TileKey(zoom, column, row));
             return (tileData == null || tileData.length == 0) ? Optional.empty() : Optional.of(tileData);

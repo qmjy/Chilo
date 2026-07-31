@@ -24,8 +24,14 @@ import io.github.qmjy.mapserver.spec.TileJSON;
 import io.github.qmjy.mapserver.util.FileUtils;
 import io.github.qmjy.mapserver.util.SystemUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
@@ -36,6 +42,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -122,6 +130,13 @@ public class MapServerWebController extends BaseController {
 
             return "pbf".equals(tileMetaData.getFormat()) ? "maplibre-vector" : "maplibre-raster";
         }
+
+        if (tileset.endsWith(AppConfig.FILE_EXTENSION_NAME_VTPK)) {
+            model.addAttribute("tilesetName", tileset);
+            model.addAttribute("metaData", tileMetaData);
+            return "maplibre-vector";
+        }
+
         if (tileset.endsWith(AppConfig.FILE_EXTENSION_NAME_TPK)) {
             model.addAttribute("tilesetName", tileset);
             model.addAttribute("metaData", tileMetaData);
@@ -181,6 +196,58 @@ public class MapServerWebController extends BaseController {
             }
         }
         return "error";
+    }
+
+    /**
+     * 映射dataPath/assets/下的多级文件为Web资源
+     *
+     * @param request HttpServletRequest
+     * @return 文件资源
+     */
+    @GetMapping("/assets/**")
+    public ResponseEntity<Resource> getFile(HttpServletRequest request) {
+        String path = request.getRequestURI().substring(1);
+        try {
+            Path filePath = Paths.get(appConfig.getDataPath()).resolve(path).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+            if (resource.exists() && resource.isReadable()) {
+                String contentType = getContentType(resource);
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (IOException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @NotNull
+    private static String getContentType(Resource resource) {
+        String contentType = "application/octet-stream";
+        String filename = resource.getFilename();
+        if (filename != null) {
+            if (filename.endsWith(".html") || filename.endsWith(".htm")) {
+                contentType = "text/html";
+            } else if (filename.endsWith(".css")) {
+                contentType = "text/css";
+            } else if (filename.endsWith(".js")) {
+                contentType = "application/javascript";
+            } else if (filename.endsWith(".json")) {
+                contentType = "application/json";
+            } else if (filename.endsWith(".png")) {
+                contentType = "image/png";
+            } else if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
+                contentType = "image/jpeg";
+            } else if (filename.endsWith(".gif")) {
+                contentType = "image/gif";
+            } else if (filename.endsWith(".svg")) {
+                contentType = "image/svg+xml";
+            }
+        }
+        return contentType;
     }
 
 

@@ -144,16 +144,33 @@ public class MapServerDataCenter {
     public void indexTpk(File tpk) {
         if (!tilesMap.containsKey(tpk.getName()) && !removedTiles.contains(tpk.getName())) {
             logger.info("Try to load tile of tpk: {}", tpk.getName());
-            TileOfTpk dbFileModel = new TileOfTpk(tpk);
-            while (!dbFileModel.isLoaded()) {
-                try {
-                    TimeUnit.MILLISECONDS.sleep(100);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
+
+            AbstractTile tileModel = null;
+
+            if (tpk.getName().endsWith(".vtpk")) {
+                VectorTileOfTpk dbFileModel = new VectorTileOfTpk(tpk);
+                tileModel = dbFileModel;
+                while (!dbFileModel.isLoaded()) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            } else {
+                RasterTileOfTpk dbFileModel = new RasterTileOfTpk(tpk);
+                tileModel = dbFileModel;
+                while (!dbFileModel.isLoaded()) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(100);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
-            if (dbFileModel.isValid()) {
-                tilesMap.put(tpk.getName(), dbFileModel);
+
+            if (tileModel.isValid()) {
+                tilesMap.put(tpk.getName(), tileModel);
             } else {
                 removedTiles.add(tpk.getName());
             }

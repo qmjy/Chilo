@@ -115,6 +115,11 @@ public class TileOfMbtiles extends AbstractTile {
     }
 
     @Override
+    public byte[] getTile(int zoom, int x, int y) {
+        return new byte[0];
+    }
+
+    @Override
     public void countSize() {
         String sql = "SELECT COUNT(*) AS count FROM tiles";
         Map<String, Object> result = jdbcTemplate.queryForMap(sql);

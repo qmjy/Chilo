@@ -52,6 +52,11 @@ public class TileOfDir extends AbstractTile {
     }
 
     @Override
+    public byte[] getTile(int zoom, int x, int y) {
+        return new byte[0];
+    }
+
+    @Override
     public void countSize() {
         // 目录类型的瓦片计数实现
         // TODO: 实现目录瓦片计数逻辑
