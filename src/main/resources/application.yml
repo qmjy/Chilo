@@ -15,8 +15,6 @@ spring:
     suffix: .html
     encoding: UTF-8
     cache: false
-  datasource:
-    driver-class-name: org.sqlite.JDBC
   servlet:
     multipart:
       max-file-size: 1GB

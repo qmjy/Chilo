@@ -62,8 +62,6 @@ public class AppConfig {
      */
     public static final MediaType IMAGE_WEBP = MediaType.valueOf("image/webp");
 
-    @Value("${spring.datasource.driver-class-name}")
-    private String driverClassName;
 
     /**
      * 数据文件存放路径

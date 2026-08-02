@@ -109,21 +109,22 @@ public class AsyncService {
         TileJSON tileMetaData = mapServerDataCenter.getTileMetaData(tilesetFile.getName());
         if ("pbf".equals(tileMetaData.getFormat()) || "mvt".equals(tileMetaData.getFormat())) {
             String idxFilePath = tilesetFile.getAbsolutePath() + ".idx";
-            if (!new File(idxFilePath).exists()) {
-                JdbcTemplate idxJdbcTemp = JdbcUtils.getInstance().getJdbcTemplate(appConfig.getDriverClassName(), idxFilePath);
+            File file = new File(idxFilePath);
+            if (!file.exists()) {
+                JdbcTemplate idxJdbcTemp = JdbcUtils.getInstance().getJdbcTemplate(idxFilePath);
                 idxJdbcTemp.execute("CREATE TABLE poi(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, tile_row INTEGER NOT NULL, tile_column INTEGER NOT NULL, zoom_level INTEGER NOT NULL, geometry TEXT NOT NULL, geometry_type INTEGER NOT NULL);");
 
                 AbstractTile tilesFileModel = mapServerDataCenter.getTilesFileModel(tilesetFile.getName());
                 tilesFileModel.countSize();
                 extractPoi2Idx(tilesFileModel, idxJdbcTemp);
-                JdbcUtils.getInstance().releaseJdbcTemplate(idxJdbcTemp);
+                JdbcUtils.getInstance().releaseJdbcTemplate(idxJdbcTemp, file.getName());
             }
         }
     }
 
     private void extractPoi2Idx(AbstractTile tilesFileModel, JdbcTemplate idxJdbcTemp) {
         //只从最高层级解析POI数据
-        String maxZoom = tilesFileModel.getTileJSON().getMaxzoom()+"";
+        String maxZoom = tilesFileModel.getTileJSON().getMaxzoom() + "";
         if (tilesFileModel instanceof TileOfMbtiles tileModel) {
             JdbcTemplate jdbcTemplate = tileModel.getJdbcTemplate();
 
@@ -234,7 +235,7 @@ public class AsyncService {
                 return;
             }
 
-            JdbcTemplate jdbcTemplate = JdbcUtils.getInstance().getJdbcTemplate(appConfig.getDriverClassName(), targetTmpFile.getAbsolutePath());
+            JdbcTemplate jdbcTemplate = JdbcUtils.getInstance().getJdbcTemplate(targetTmpFile.getAbsolutePath());
             Iterator<Map.Entry<String, MbtileMergeFile>> iterator = needMerges.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry<String, MbtileMergeFile> next = iterator.next();
@@ -246,7 +247,7 @@ public class AsyncService {
             }
 
             updateMetadata(wrapper, jdbcTemplate);
-            JdbcUtils.getInstance().releaseJdbcTemplate(jdbcTemplate);
+            JdbcUtils.getInstance().releaseJdbcTemplate(jdbcTemplate, targetTmpFile.getName());
 
             if (targetTmpFile.renameTo(new File(targetFilePath))) {
                 mergeTaskProgress.put(taskId, 100);
@@ -335,7 +336,7 @@ public class AsyncService {
     }
 
     private MbtileMergeFile wrapModel(String item) {
-        JdbcTemplate jdbcTemplate = JdbcUtils.getInstance().getJdbcTemplate(appConfig.getDriverClassName(), item);
+        JdbcTemplate jdbcTemplate = JdbcUtils.getInstance().getJdbcTemplate(item);
         return new MbtileMergeFile(item, jdbcTemplate);
     }
 
@@ -359,11 +360,12 @@ public class AsyncService {
     public void indexPoi(File csvFile) {
         String absolutePath = csvFile.getAbsolutePath();
         String poiFile = absolutePath.substring(0, absolutePath.lastIndexOf(".")) + ".poi";
-        if (new File(poiFile).exists()) {
+        File file = new File(poiFile);
+        if (file.exists()) {
             LOGGER.info("The file of poi already exists: {}", poiFile);
             return;
         }
-        JdbcTemplate jdbcTemplate = JdbcUtils.getInstance().getJdbcTemplate(appConfig.getDriverClassName(), poiFile);
+        JdbcTemplate jdbcTemplate = JdbcUtils.getInstance().getJdbcTemplate(poiFile);
 
         List<String[]> data = new ArrayList<>();
         int pageSize = 50000;
@@ -383,7 +385,7 @@ public class AsyncService {
                 }
             }
             insertTable(jdbcTemplate, data);
-            JdbcUtils.getInstance().releaseJdbcTemplate(jdbcTemplate);
+            JdbcUtils.getInstance().releaseJdbcTemplate(jdbcTemplate, file.getName());
             LOGGER.info("Index poi of count: {}", i);
         } catch (IOException e) {
             LOGGER.error("Index poi file failed: {}", csvFile.getAbsolutePath());

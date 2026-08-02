@@ -73,7 +73,7 @@ public class MapServerPOIRestController {
 
         File poiIndexFile = getPoiFile();
         if (poiIndexFile.exists()) {
-            JdbcTemplate idxJdbcTemp = JdbcUtils.getInstance().getJdbcTemplate(appConfig.getDriverClassName(), poiIndexFile.getAbsolutePath());
+            JdbcTemplate idxJdbcTemp = JdbcUtils.getInstance().getJdbcTemplate(poiIndexFile.getAbsolutePath());
             String sql = "SELECT * FROM poi WHERE name LIKE ? LIMIT " + (pageSize <= 0 || pageSize > 100 ? 10 : pageSize);
             List<Map<String, Object>> maps = idxJdbcTemp.queryForList(sql, "%" + keywords + "%");
             List<PoiPoint> dataList = new ArrayList<>();
@@ -115,7 +115,7 @@ public class MapServerPOIRestController {
         String filePath = poiFile.endsWith(".poi") ? appConfig.getDataPath() + File.separator + "poi" + File.separator + poiFile : appConfig.getDataPath() + File.separator + "tilesets" + File.separator + poiFile + ".idx";
         File poiIndexFile = new File(filePath);
         if (poiIndexFile.exists()) {
-            JdbcTemplate idxJdbcTemp = JdbcUtils.getInstance().getJdbcTemplate(appConfig.getDriverClassName(), filePath);
+            JdbcTemplate idxJdbcTemp = JdbcUtils.getInstance().getJdbcTemplate(filePath);
             String sql = "SELECT * FROM poi WHERE name LIKE ? LIMIT " + (pageSize <= 0 || pageSize > 100 ? 10 : pageSize);
             List<Map<String, Object>> maps = idxJdbcTemp.queryForList(sql, "%" + keywords + "%");
             List<PoiPoint> dataList = new ArrayList<>();

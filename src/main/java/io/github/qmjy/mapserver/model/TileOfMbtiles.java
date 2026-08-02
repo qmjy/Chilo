@@ -27,10 +27,10 @@ public class TileOfMbtiles extends AbstractTile {
 
     private JdbcTemplate jdbcTemplate;
 
-    public TileOfMbtiles(File file, String className) {
+    public TileOfMbtiles(File file) {
         super(file.getAbsolutePath());
         this.fileLength = file.length();
-        initJdbc(className, file);
+        initJdbc(file);
         if (loadMetadata()) {
             countSize();
             this.isGzip = isCompressed();
@@ -147,7 +147,7 @@ public class TileOfMbtiles extends AbstractTile {
         return true;
     }
 
-    private void initJdbc(String className, File file) {
-        this.jdbcTemplate = JdbcUtils.getInstance().getJdbcTemplate(className, file.getAbsolutePath());
+    private void initJdbc(File file) {
+        this.jdbcTemplate = JdbcUtils.getInstance().getJdbcTemplate(file.getAbsolutePath());
     }
 }

@@ -37,6 +37,7 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
     private final AsyncService asyncService;
     private final MapServerDataCenter dataCenter;
 
+
     public DataSourceApplicationRunner(AppConfig appConfig, AsyncService asyncService, MapServerDataCenter dataCenter) {
         this.appConfig = appConfig;
         this.asyncService = asyncService;
@@ -91,7 +92,6 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
     }
 
 
-
     private void searchTilesOfMbtiles(File tilesetsFolder) {
         File[] files = tilesetsFolder.listFiles(pathname -> pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_MBTILES) || pathname.isDirectory());
         if (files != null) {
@@ -99,7 +99,7 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
                 if (file.isDirectory()) {
                     dataCenter.initTilesOfDir(file);
                 } else {
-                    dataCenter.initJdbcTemplate(appConfig.getDriverClassName(), file);
+                    dataCenter.initJdbcTemplate(file);
                     if (appConfig.isEnablePoiExtractMvt()) {
                         asyncService.asyncMbtilesToPOI(file);
                     }
@@ -107,6 +107,7 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
             }
         }
     }
+
 
     /**
      * data format from: <a href="https://osm-boundaries.com/">OSM-Boundaries</a>

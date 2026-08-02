@@ -37,7 +37,7 @@ public class AsyncTask {
                 File[] files = tilesetsFolder.listFiles(pathname -> pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_MBTILES));
                 if (files != null) {
                     for (File dbFile : files) {
-                        dataCenter.initJdbcTemplate(appConfig.getDriverClassName(), dbFile);
+                        dataCenter.initJdbcTemplate(dbFile);
                     }
                 }
 

@@ -51,7 +51,6 @@ public class MapServerDataCenter {
     private static final Logger logger = LoggerFactory.getLogger(MapServerDataCenter.class);
 
 
-
     /**
      * 瓦片数据库文件模型
      */
@@ -103,17 +102,15 @@ public class MapServerDataCenter {
     private boolean initialized = false;
 
 
-
     /**
      * 初始化数据源
      *
-     * @param className 驱动名称
-     * @param mbtiles   待链接的数据库文件
+     * @param mbtiles 待链接的数据库文件
      */
-    public void initJdbcTemplate(String className, File mbtiles) {
+    public void initJdbcTemplate(File mbtiles) {
         if (!tilesMap.containsKey(mbtiles.getName())) {
             logger.info("Try to load tile of mbtiles: {}", mbtiles.getName());
-            TileOfMbtiles dbFileModel = new TileOfMbtiles(mbtiles, className);
+            TileOfMbtiles dbFileModel = new TileOfMbtiles(mbtiles);
             if (dbFileModel.isValid()) {
                 tilesMap.put(mbtiles.getName(), dbFileModel);
             }
