@@ -50,6 +50,11 @@ import java.util.Map;
 @Tag(name = "地理编码管理", description = "地理编码与逆编码服务接口能力")
 public class MapServerGeoController {
     private static final Logger logger = LoggerFactory.getLogger(MapServerGeoController.class);
+    private final MapServerDataCenter dataCenter;
+
+    public MapServerGeoController(MapServerDataCenter dataCenter) {
+        this.dataCenter = dataCenter;
+    }
 
     /**
      * 地理信息配准。当前接口仅支持四边形校准。顺序为（左上、右上、右下、左下）
@@ -112,7 +117,7 @@ public class MapServerGeoController {
     @Operation(summary = "地理逆编码查询", description = "通过经纬度查询行政区划概要信息，通过区划ID可获取行政区划详细信息。")
     @GetMapping("/geocode/regeo")
     public ResponseEntity<Map<String, Object>> regeo(@Parameter(description = "待查询的经纬度坐标，例如：104.071883,30.671974") @RequestParam(value = "location") String location, @Parameter(description = "返回的数据语言。0：本地语言（default）；1：英语") @RequestParam(value = "langType", required = false, defaultValue = "0") int langType, @Parameter(description = "各行政区划节点之间的分割符。默认本地语言无分隔符，英文为空格。") @RequestParam(value = "splitter", required = false, defaultValue = "") String splitter) {
-        AdministrativeDivisionNode simpleAdminDivision = MapServerDataCenter.getInstance().getSimpleAdminDivision();
+        AdministrativeDivisionNode simpleAdminDivision = dataCenter.getSimpleAdminDivision();
         if (simpleAdminDivision == null) {
             String msg = "Can't find any geojson file for boundary search!";
             logger.error(msg);

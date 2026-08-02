@@ -73,9 +73,9 @@ public class MapServerTilesetsRestController {
     private final MapServerDataCenter mapServerDataCenter;
     private final AppConfig appConfig;
 
-    public MapServerTilesetsRestController(AsyncService asyncService, AppConfig appConfig) {
+    public MapServerTilesetsRestController(AsyncService asyncService, AppConfig appConfig, MapServerDataCenter mapServerDataCenter) {
         this.asyncService = asyncService;
-        this.mapServerDataCenter = MapServerDataCenter.getInstance();
+        this.mapServerDataCenter = mapServerDataCenter;
         this.appConfig = appConfig;
     }
 

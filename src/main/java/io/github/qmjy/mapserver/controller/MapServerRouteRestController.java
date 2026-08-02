@@ -48,6 +48,12 @@ import java.util.Map;
 @Tag(name = "路径规划", description = "驾车、骑行、步行路径规划")
 public class MapServerRouteRestController extends BaseController {
 
+    private MapServerDataCenter mapServerDataCenter;
+
+    public MapServerRouteRestController(MapServerDataCenter mapServerDataCenter) {
+        this.mapServerDataCenter = mapServerDataCenter;
+    }
+
     /**
      * 环境还未就绪
      */
@@ -81,7 +87,7 @@ public class MapServerRouteRestController extends BaseController {
                                                      @Parameter(description = "待规划的终点纬度坐标，例如：30.66082") @RequestParam(value = "endLatitude") double endLatitude,
                                                      @Parameter(description = "出行方式。0：驾车（default）、1：骑行、2：步行") @RequestParam(value = "routeType", required = false, defaultValue = "0") int routeType,
                                                      @Parameter(description = "支持本地语言(0: default)、英语（1）、简体中文（2）") @RequestParam(value = "lang", required = false, defaultValue = "0") int lang) {
-        GraphHopper hopper = MapServerDataCenter.getInstance().getHopperMap().get(osmpbf);
+        GraphHopper hopper = mapServerDataCenter.getHopperMap().get(osmpbf);
         if (hopper == null) {
             Map<String, Object> ok = ResponseMapUtil.nok(ROUTE_ERROR_CODE_NOT_READY, "数据源未就绪或不存在：" + osmpbf);
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(ok);

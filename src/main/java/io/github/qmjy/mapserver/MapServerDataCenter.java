@@ -50,7 +50,7 @@ public class MapServerDataCenter {
 
     private static final Logger logger = LoggerFactory.getLogger(MapServerDataCenter.class);
 
-    private static final MapServerDataCenter INSTANCE = new MapServerDataCenter();
+
 
     /**
      * 瓦片数据库文件模型
@@ -103,12 +103,6 @@ public class MapServerDataCenter {
     private boolean initialized = false;
 
 
-    private MapServerDataCenter() {
-    }
-
-    public static MapServerDataCenter getInstance() {
-        return INSTANCE;
-    }
 
     /**
      * 初始化数据源
@@ -132,6 +126,19 @@ public class MapServerDataCenter {
             TileOfDir dbFileModel = new TileOfDir(file);
             if (dbFileModel.isValid()) {
                 tilesMap.put(file.getName(), dbFileModel);
+            }
+        }
+    }
+
+
+    public void indexArcgisTpk(File tilesetsFolder) {
+        File[] files = tilesetsFolder.listFiles(pathname ->
+                pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_TPK)
+                        || pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_VTPK)
+                        || pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_TPKX));
+        if (files != null) {
+            for (File tpk : files) {
+                indexTpk(tpk);
             }
         }
     }
@@ -196,7 +203,7 @@ public class MapServerDataCenter {
     }
 
     public void initMapnik(boolean ready) {
-        MapServerDataCenter.getInstance().setMapnikReady(ready);
+        setMapnikReady(ready);
     }
 
 

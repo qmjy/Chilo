@@ -56,9 +56,9 @@ public class MapServerWebController extends BaseController {
     private final MapServerDataCenter mapServerDataCenter;
     private final AppConfig appConfig;
 
-    public MapServerWebController(AppConfig appConfig) {
+    public MapServerWebController(AppConfig appConfig, MapServerDataCenter mapServerDataCenter) {
         this.appConfig = appConfig;
-        this.mapServerDataCenter = MapServerDataCenter.getInstance();
+        this.mapServerDataCenter = mapServerDataCenter;
     }
 
 

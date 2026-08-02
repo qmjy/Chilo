@@ -35,10 +35,12 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
     private final Logger logger = LoggerFactory.getLogger(DataSourceApplicationRunner.class);
     private final AppConfig appConfig;
     private final AsyncService asyncService;
+    private final MapServerDataCenter dataCenter;
 
-    public DataSourceApplicationRunner(AppConfig appConfig, AsyncService asyncService) {
+    public DataSourceApplicationRunner(AppConfig appConfig, AsyncService asyncService, MapServerDataCenter dataCenter) {
         this.appConfig = appConfig;
         this.asyncService = asyncService;
+        this.dataCenter = dataCenter;
     }
 
     @Override
@@ -70,7 +72,7 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
         searchTileOfTpk(tilesetsFolder);
         searchTilesOfMbtiles(tilesetsFolder);
         searchShapefile(tilesetsFolder);
-        MapServerDataCenter.getInstance().setInitialized(true);
+        dataCenter.setInitialized(true);
     }
 
     private void searchShapefile(File tilesetsFolder) {
@@ -78,36 +80,26 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
         if (files != null) {
             for (File shapefile : files) {
                 logger.info("Load shapefile: {}", shapefile.getName());
-                MapServerDataCenter.getInstance().initShapefile(shapefile);
+                dataCenter.initShapefile(shapefile);
             }
         }
     }
 
 
     private void searchTileOfTpk(File tilesetsFolder) {
-        indexArcgisTpk(tilesetsFolder);
+        dataCenter.indexArcgisTpk(tilesetsFolder);
     }
 
-    public static void indexArcgisTpk(File tilesetsFolder) {
-        File[] files = tilesetsFolder.listFiles(pathname ->
-                pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_TPK)
-                        || pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_VTPK)
-                        || pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_TPKX));
-        if (files != null) {
-            for (File tpk : files) {
-                MapServerDataCenter.getInstance().indexTpk(tpk);
-            }
-        }
-    }
+
 
     private void searchTilesOfMbtiles(File tilesetsFolder) {
         File[] files = tilesetsFolder.listFiles(pathname -> pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_MBTILES) || pathname.isDirectory());
         if (files != null) {
             for (File file : files) {
                 if (file.isDirectory()) {
-                    MapServerDataCenter.getInstance().initTilesOfDir(file);
+                    dataCenter.initTilesOfDir(file);
                 } else {
-                    MapServerDataCenter.getInstance().initJdbcTemplate(appConfig.getDriverClassName(), file);
+                    dataCenter.initJdbcTemplate(appConfig.getDriverClassName(), file);
                     if (appConfig.isEnablePoiExtractMvt()) {
                         asyncService.asyncMbtilesToPOI(file);
                     }
@@ -128,7 +120,7 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
             for (File boundary : files) {
                 if (!boundary.isDirectory() && boundary.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_GEOJSON)) {
                     logger.info("Load boundary file: {}", boundary.getName());
-                    MapServerDataCenter.getInstance().initBoundaryFile(boundary);
+                    dataCenter.initBoundaryFile(boundary);
                 }
             }
         }
@@ -140,7 +132,7 @@ public class DataSourceApplicationRunner implements ApplicationRunner {
         if (files != null) {
             for (File fontFolder : files) {
                 if (fontFolder.isDirectory()) {
-                    MapServerDataCenter.getInstance().initFontsFile(fontFolder);
+                    dataCenter.initFontsFile(fontFolder);
                 }
             }
         }

@@ -18,8 +18,8 @@ package io.github.qmjy.mapserver.controller;
 
 import io.github.qmjy.mapserver.MapServerDataCenter;
 import io.github.qmjy.mapserver.model.AdministrativeDivision;
-import io.github.qmjy.mapserver.model.AdministrativeDivisionOrigin;
 import io.github.qmjy.mapserver.model.AdministrativeDivisionNode;
+import io.github.qmjy.mapserver.model.AdministrativeDivisionOrigin;
 import io.github.qmjy.mapserver.util.ResponseMapUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -52,7 +52,11 @@ import java.util.*;
 public class MapServerOsmBController {
     private static final Logger logger = LoggerFactory.getLogger(MapServerOsmBController.class);
     private final Map<String, AdministrativeDivision> cacheMap = new HashMap<>();
-    private final MapServerDataCenter mapServerDataCenter = MapServerDataCenter.getInstance();
+    private final MapServerDataCenter mapServerDataCenter;
+
+    public MapServerOsmBController(MapServerDataCenter mapServerDataCenter) {
+        this.mapServerDataCenter = mapServerDataCenter;
+    }
 
     /**
      * 获取行政区划数据，为空则从根节点开始

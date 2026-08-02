@@ -18,6 +18,7 @@ import java.io.File;
 public class AsyncTask {
     private final Logger logger = LoggerFactory.getLogger(AsyncTask.class);
     private final AppConfig appConfig;
+    private final MapServerDataCenter dataCenter;
 
     /**
      * 每10秒执行一次
@@ -25,7 +26,7 @@ public class AsyncTask {
     @Async
     @Scheduled(cron = "0/10 * * * * ?")
     public void tasks() {
-        if (!MapServerDataCenter.getInstance().isInitialized()) {
+        if (!dataCenter.isInitialized()) {
             return;
         }
 
@@ -36,11 +37,11 @@ public class AsyncTask {
                 File[] files = tilesetsFolder.listFiles(pathname -> pathname.getName().endsWith(AppConfig.FILE_EXTENSION_NAME_MBTILES));
                 if (files != null) {
                     for (File dbFile : files) {
-                        MapServerDataCenter.getInstance().initJdbcTemplate(appConfig.getDriverClassName(), dbFile);
+                        dataCenter.initJdbcTemplate(appConfig.getDriverClassName(), dbFile);
                     }
                 }
 
-                DataSourceApplicationRunner.indexArcgisTpk(tilesetsFolder);
+                dataCenter.indexArcgisTpk(tilesetsFolder);
             }
         }
     }
