@@ -18,10 +18,93 @@
             bottom: 0;
             width: 100%;
         }
+
+        .maplibregl-ctrl-coord {
+            width: 320px;
+            position: relative;
+        }
+
+        .maplibregl-ctrl-coord input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 36px 8px 34px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #333;
+            outline: 1px solid #ccc;
+        }
+
+        .maplibregl-ctrl-coord input::placeholder {
+            color: #aaa;
+        }
+
+        .maplibregl-ctrl-coord input:focus {
+            box-shadow: inset 0 0 0 2px rgba(0, 125, 191, 0.5);
+        }
+
+        .maplibregl-ctrl-coord .coord-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        .maplibregl-ctrl-coord .coord-btn {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .maplibregl-ctrl-coord .coord-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .maplibregl-ctrl-coord .coord-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .maplibregl-ctrl-coord-error {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            color: #d32f2f;
+            font-size: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            white-space: nowrap;
+        }
     </style>
 </head>
 
 <body>
+<div id="coord-panel" class="maplibregl-ctrl maplibregl-ctrl-coord">
+    <svg class="coord-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M10 0C6.13 0 3 3.13 3 7c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 10 4.5a2.5 2.5 0 0 1 0 5z" fill="#333"/>
+    </svg>
+    <input type="text" id="input-coord" placeholder="输入经纬度回车定位：116.397,39.908">
+    <button class="coord-btn" title="定位">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8.5 14.5l-4 4L2 16l4-4L3 9h6l5-5 2 2-5 5v6l-3-1.5z" fill="#333"/>
+        </svg>
+    </button>
+    <span id="coord-error" class="maplibregl-ctrl-coord-error"></span>
+</div>
 <div id="map"></div>
 <script>
     function showMap(tileName, result) {
@@ -155,6 +238,61 @@
         map.addControl(new maplibregl.NavigationControl())
         map.addControl(new maplibregl.FullscreenControl())
         map.addControl(new maplibregl.ScaleControl())
+
+        const coordPanel = document.getElementById('coord-panel');
+        map.getContainer().appendChild(coordPanel);
+        Object.assign(coordPanel.style, {
+            position: 'absolute',
+            top: '10px',
+            left: '10px',
+            zIndex: '2'
+        });
+
+        let currentMarker = null;
+        const inputCoord = document.getElementById('input-coord');
+        const coordError = document.getElementById('coord-error');
+        const coordBtn = coordPanel.querySelector('.coord-btn');
+
+        function flyToCoord() {
+            coordError.textContent = '';
+            const val = inputCoord.value.trim();
+            if (!val) {
+                coordError.textContent = '请输入经纬度';
+                return;
+            }
+            const parts = val.split(/[,，\s]+/);
+            if (parts.length !== 2) {
+                coordError.textContent = '格式: 经度,纬度';
+                return;
+            }
+            const lng = parseFloat(parts[0]);
+            const lat = parseFloat(parts[1]);
+            if (isNaN(lng) || isNaN(lat)) {
+                coordError.textContent = '请输入有效数字';
+                return;
+            }
+            if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+                coordError.textContent = '经度-180~180,纬度-90~90';
+                return;
+            }
+            if (currentMarker) {
+                currentMarker.remove();
+            }
+            currentMarker = new maplibregl.Marker()
+                .setLngLat([lng, lat])
+                .setPopup(new maplibregl.Popup().setText(`${lng}, ${lat}`))
+                .addTo(map);
+            map.flyTo({
+                center: [lng, lat],
+                zoom: 14,
+                essential: true
+            });
+        }
+
+        inputCoord.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') flyToCoord();
+        });
+        coordBtn.addEventListener('click', flyToCoord);
     }
 
     function getTilesetName() {

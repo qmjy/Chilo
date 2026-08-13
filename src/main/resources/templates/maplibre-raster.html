@@ -19,21 +19,108 @@
             width: 100%;
         }
 
+        .top-left-panel {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .maplibregl-ctrl-coord {
+            width: 320px;
+            position: relative;
+        }
+
+        .maplibregl-ctrl-coord input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 8px 36px 8px 34px;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #333;
+            outline: 1px solid #ccc;
+        }
+
+        .maplibregl-ctrl-coord input::placeholder {
+            color: #aaa;
+        }
+
+        .maplibregl-ctrl-coord input:focus {
+            box-shadow: inset 0 0 0 2px rgba(0, 125, 191, 0.5);
+        }
+
+        .maplibregl-ctrl-coord .coord-icon {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            pointer-events: none;
+        }
+
+        .maplibregl-ctrl-coord .coord-btn {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            border: none;
+            background: transparent;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .maplibregl-ctrl-coord .coord-btn:hover {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .maplibregl-ctrl-coord .coord-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .maplibregl-ctrl-coord-error {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            color: #d32f2f;
+            font-size: 12px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            white-space: nowrap;
+        }
+
         ul {
             margin: 0;
             padding: 0;
         }
 
-        .scheme {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 5px 8px;
-            border-radius: 5px;
+        .scheme-ctrl {
+            padding: 8px 10px;
             font-size: 12px;
-            z-index: 10;
-            color: #fff;
+            color: #333;
+            border-radius: 4px;
+        }
+
+        .scheme-ctrl ul {
+            list-style: none;
+            margin-bottom: 6px;
+        }
+
+        .scheme-ctrl ul li {
+            line-height: 1.5;
+            color: #666;
         }
 
         .toggle-button-cover {
@@ -164,27 +251,88 @@
 
 <body>
 <div id="map"></div>
-<div class="scheme">
-    <ul>
-        <li>TMS: 原点在左下角，Y轴向上递增；更符合笛卡尔坐标系；常用于GIS专业应用</li>
-        <li>XYZ: 原点在左上角，Y轴向下递增；Google Maps、OSM使用此标准</li>
-    </ul>
-
-    <div class="toggle-button-cover">
-        <div class="button-cover">
-            <div class="button b2" id="button-11">
-                <input id="scheme" type="checkbox" class="checkbox"/>
-                <div class="knobs">
-                    <span></span>
+<div class="top-left-panel">
+    <div id="coord-panel" class="maplibregl-ctrl maplibregl-ctrl-coord">
+        <svg class="coord-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 0C6.13 0 3 3.13 3 7c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 10 4.5a2.5 2.5 0 0 1 0 5z" fill="#333"/>
+        </svg>
+        <input type="text" id="input-coord" placeholder="经度,纬度  如 116.397,39.908">
+        <button class="coord-btn" title="定位">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.5 14.5l-4 4L2 16l4-4L3 9h6l5-5 2 2-5 5v6l-3-1.5z" fill="#333"/>
+            </svg>
+        </button>
+        <span id="coord-error" class="maplibregl-ctrl-coord-error"></span>
+    </div>
+    <div class="maplibregl-ctrl scheme-ctrl">
+        <ul>
+            <li>TMS: 原点在左下角，Y轴向上递增；更符合笛卡尔坐标系；常用于GIS专业应用</li>
+            <li>XYZ: 原点在左上角，Y轴向下递增；Google Maps、OSM使用此标准</li>
+        </ul>
+        <div class="toggle-button-cover">
+            <div class="button-cover">
+                <div class="button b2" id="button-11">
+                    <input id="scheme" type="checkbox" class="checkbox"/>
+                    <div class="knobs">
+                        <span></span>
+                    </div>
+                    <div class="layer"></div>
                 </div>
-                <div class="layer"></div>
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
     let scheme = "xyz";
-    let map, mapData;
+    let map, mapData, currentMarker = null;
+
+    const coordPanel = document.getElementById('coord-panel');
+    const inputCoord = document.getElementById('input-coord');
+    const coordError = document.getElementById('coord-error');
+    const coordBtn = coordPanel.querySelector('.coord-btn');
+
+    function flyToCoord() {
+        if (!map) return;
+        coordError.textContent = '';
+        const val = inputCoord.value.trim();
+        if (!val) {
+            coordError.textContent = '请输入经纬度';
+            return;
+        }
+        const parts = val.split(/[,，\s]+/);
+        if (parts.length !== 2) {
+            coordError.textContent = '格式: 经度,纬度';
+            return;
+        }
+        const lng = parseFloat(parts[0]);
+        const lat = parseFloat(parts[1]);
+        if (isNaN(lng) || isNaN(lat)) {
+            coordError.textContent = '请输入有效数字';
+            return;
+        }
+        if (lng < -180 || lng > 180 || lat < -90 || lat > 90) {
+            coordError.textContent = '经度-180~180,纬度-90~90';
+            return;
+        }
+        if (currentMarker) {
+            currentMarker.remove();
+            currentMarker = null;
+        }
+        currentMarker = new maplibregl.Marker()
+            .setLngLat([lng, lat])
+            .setPopup(new maplibregl.Popup().setText(`${lng}, ${lat}`))
+            .addTo(map);
+        map.flyTo({
+            center: [lng, lat],
+            zoom: 14,
+            essential: true
+        });
+    }
+
+    inputCoord.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') flyToCoord();
+    });
+    coordBtn.addEventListener('click', flyToCoord);
 
     function showMap(tileName, scheme, result) {
         const hostUrl = `${window.location.protocol}//${window.location.host}`
