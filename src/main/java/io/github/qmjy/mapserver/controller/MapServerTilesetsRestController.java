@@ -128,35 +128,13 @@ public class MapServerTilesetsRestController {
      * @param y       地图的y 轴瓦片坐标
      * @return jpg 格式的瓦片数据
      */
-    @GetMapping(value = "/{tileset}/{z}/{x}/{y}.jpeg", produces = MediaType.IMAGE_JPEG_VALUE)
+    @GetMapping(value = "/{tileset}/{z}/{x}/{y}.{ext:jpg|jpeg|JPG|JPEG}", produces = MediaType.IMAGE_JPEG_VALUE)
     @ResponseBody
     @Operation(summary = "获取JPG 格式瓦片数据", description = "获取JPG格式瓦片数据。")
     public ResponseEntity<ByteArrayResource> loadJpegTile(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset,
                                                           @PathVariable @Parameter(description = "待查询的底图瓦片层级zoom_level") int z,
                                                           @PathVariable @Parameter(description = "待查询的底图瓦片坐标x") int x,
                                                           @PathVariable @Parameter(description = "待查询的底图瓦片坐标y") int y) {
-        if (SystemUtils.checkTilesetName(tileset)) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return this.loadJpgTile(tileset, z, x, y);
-    }
-
-    /**
-     * 加载图片瓦片数据
-     *
-     * @param tileset 瓦片数据库名称
-     * @param z       地图缩放层级
-     * @param x       地图的x 轴瓦片坐标
-     * @param y       地图的y 轴瓦片坐标
-     * @return jpg 格式的瓦片数据
-     */
-    @GetMapping(value = "/{tileset}/{z}/{x}/{y}.jpg", produces = MediaType.IMAGE_JPEG_VALUE)
-    @ResponseBody
-    @Operation(summary = "获取JPG 格式瓦片数据", description = "获取JPG格式瓦片数据。")
-    public ResponseEntity<ByteArrayResource> loadJpgTile(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset,
-                                                         @PathVariable @Parameter(description = "待查询的底图瓦片层级zoom_level") int z,
-                                                         @PathVariable @Parameter(description = "待查询的底图瓦片坐标x") int x,
-                                                         @PathVariable @Parameter(description = "待查询的底图瓦片坐标y") int y) {
         if (SystemUtils.checkTilesetName(tileset)) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
@@ -176,7 +154,7 @@ public class MapServerTilesetsRestController {
      * @param z       地图缩放层级
      * @param x       地图的x 轴瓦片坐标
      * @param y       地图的y 轴瓦片坐标
-     * @return png 格式的瓦片数据
+     * @return webp 格式的瓦片数据
      */
     @GetMapping(value = "/{tileset}/{z}/{x}/{y}.webp", produces = AppConfig.IMAGE_WEBP_VALUE)
     @ResponseBody
@@ -209,7 +187,7 @@ public class MapServerTilesetsRestController {
      * @param y       地图的y 轴瓦片坐标
      * @return png 格式的瓦片数据
      */
-    @GetMapping(value = "/{tileset}/{z}/{x}/{y}.png", produces = MediaType.IMAGE_PNG_VALUE)
+    @GetMapping(value = "/{tileset}/{z}/{x}/{y}.{ext:png|png8|png24|png32|PNG|PNG8|PNG24|PNG32}", produces = MediaType.IMAGE_PNG_VALUE)
     @ResponseBody
     @Operation(summary = "获取PNG 格式瓦片数据", description = "获取PNG格式瓦片数据。")
     public ResponseEntity<ByteArrayResource> loadPngTile(@PathVariable @Parameter(description = "待查询的瓦片数据源或文件夹名字，例如：Chengdu.mbtiles") String tileset,
@@ -534,9 +512,5 @@ public class MapServerTilesetsRestController {
             }
         }
         return Optional.empty();
-    }
-
-    private boolean isSafePath(String path) {
-        return path.startsWith(appConfig.getDataPath());
     }
 }

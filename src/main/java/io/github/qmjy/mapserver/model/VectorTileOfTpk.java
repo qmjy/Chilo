@@ -30,7 +30,7 @@ public class VectorTileOfTpk extends AbstractTile {
         this.tileCache.loadAsync();
         this.tileCache.addDoneLoadingListener(() -> {
             if (tileCache.getLoadStatus() == LoadStatus.LOADED) {
-                logger.error("The vtpk file is loaded: {}", tpk.getName());
+                logger.info("The vtpk file is loaded: {}", tpk.getName());
                 if (loadMetadata()) {
                     this.valid = true;
                 }

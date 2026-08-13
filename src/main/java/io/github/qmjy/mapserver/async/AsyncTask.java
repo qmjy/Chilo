@@ -2,7 +2,6 @@ package io.github.qmjy.mapserver.async;
 
 import io.github.qmjy.mapserver.MapServerDataCenter;
 import io.github.qmjy.mapserver.config.AppConfig;
-import io.github.qmjy.mapserver.config.DataSourceApplicationRunner;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
