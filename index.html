@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>青罗地图 · Chilo | 轻量级地图服务器</title>
+    <!-- 使用简洁的字体与样式 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* 头部导航 */
+        .navbar {
+            padding: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            border-bottom: 1px solid #e9edf2;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: #2d6a4f;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px -2px rgba(45, 106, 79, 0.2);
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: #0b2b1f;
+        }
+
+        .logo-text span {
+            color: #2d6a4f;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            color: #334155;
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.15s;
+        }
+
+        .nav-links a:hover {
+            color: #2d6a4f;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            border: 1.5px solid #d0d8e0;
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-weight: 500;
+            color: #1e293b;
+            transition: all 0.15s;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .btn-ghost:hover {
+            border-color: #2d6a4f;
+            background: #f0f5f2;
+            color: #1e3a2b;
+        }
+
+        .btn-primary {
+            background: #2d6a4f;
+            color: white;
+            border: none;
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.15s;
+            box-shadow: 0 2px 6px rgba(45, 106, 79, 0.25);
+            font-size: 0.95rem;
+        }
+
+        .btn-primary:hover {
+            background: #1f4f3a;
+        }
+
+        /* hero */
+        .hero {
+            padding: 56px 0 48px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .hero-content {
+            flex: 1 1 500px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: #e6f0ec;
+            color: #1e4a36;
+            border-radius: 30px;
+            padding: 4px 16px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 {
+            font-size: 3.2rem;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            color: #0b2b1f;
+            margin-bottom: 18px;
+        }
+
+        .hero h1 i {
+            font-style: normal;
+            color: #2d6a4f;
+            border-bottom: 4px solid #b7d9c9;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #475569;
+            max-width: 600px;
+            margin-bottom: 28px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 32px;
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-number {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #0b2b1f;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .hero-visual {
+            flex: 1 1 380px;
+            background: #e2f0ea;
+            border-radius: 28px;
+            padding: 20px 20px 10px;
+            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 260px;
+            background-image: radial-gradient(circle at 30% 40%, #d0e8de 0%, #b7d5c5 100%);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .hero-visual-inner {
+            background: rgba(255,255,255,0.65);
+            backdrop-filter: blur(4px);
+            border-radius: 20px;
+            padding: 24px 28px;
+            text-align: center;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .hero-visual-inner h3 {
+            color: #1f4f3a;
+            font-weight: 600;
+            font-size: 1.3rem;
+            margin-bottom: 6px;
+        }
+
+        .hero-visual-inner p {
+            color: #2d4d3e;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .code-snippet {
+            background: #1e293b;
+            color: #d1d9e6;
+            padding: 12px 18px;
+            border-radius: 14px;
+            font-family: 'Menlo', 'Monaco', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            white-space: nowrap;
+            margin: 16px 0 0;
+            text-align: left;
+        }
+
+        /* 特性网格 */
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            color: #0b2b1f;
+            margin-bottom: 12px;
+        }
+
+        .section-sub {
+            color: #64748b;
+            margin-bottom: 36px;
+            font-size: 1.1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 28px;
+            margin: 40px 0 56px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            border: 1px solid #edf2f6;
+            transition: 0.15s ease;
+        }
+
+        .feature-card:hover {
+            border-color: #bcd9ce;
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.06);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .feature-card h3 {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: #0b2b1f;
+        }
+
+        .feature-card p {
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            background: #e7f0ec;
+            color: #1f4f3a;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 12px;
+            border-radius: 30px;
+            margin-top: 10px;
+        }
+
+        /* 支持表格 */
+        .support-matrix {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e9edf2;
+            overflow-x: auto;
+            margin: 24px 0 48px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.01);
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            min-width: 500px;
+        }
+
+        .matrix-table th {
+            text-align: left;
+            padding: 16px 20px;
+            background: #f8fafc;
+            color: #1e293b;
+            font-weight: 600;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .matrix-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid #edf2f6;
+            color: #334155;
+        }
+
+        .matrix-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .check {
+            color: #2d6a4f;
+            font-weight: 700;
+        }
+
+        .wip {
+            color: #b45309;
+            font-size: 0.9rem;
+        }
+
+        /* 资源与安装 */
+        .install-section {
+            background: white;
+            border-radius: 28px;
+            padding: 36px 32px;
+            margin: 40px 0 32px;
+            border: 1px solid #edf2f6;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.01);
+        }
+
+        .install-section h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0b2b1f;
+            margin-bottom: 8px;
+        }
+
+        .install-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px 40px;
+            margin-top: 20px;
+        }
+
+        .step-item {
+            flex: 1 1 200px;
+        }
+
+        .step-item .step-num {
+            font-weight: 600;
+            color: #2d6a4f;
+            font-size: 0.9rem;
+        }
+
+        .step-item p {
+            color: #334155;
+            font-size: 0.95rem;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 16px;
+            padding: 18px 24px;
+            font-family: 'Menlo', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 16px 0;
+        }
+
+        .code-block .comment {
+            color: #94a3b8;
+        }
+
+        .resource-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 24px;
+            margin: 20px 0 8px;
+        }
+
+        .resource-links a {
+            color: #2d6a4f;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px dotted #b7d9c9;
+        }
+
+        .resource-links a:hover {
+            border-bottom: 1px solid #2d6a4f;
+        }
+
+        .social-section {
+            margin: 48px 0 32px;
+            padding: 20px 0;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .social-links a {
+            color: #475569;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .social-links a:hover {
+            color: #2d6a4f;
+        }
+
+        .footer {
+            padding: 24px 0 32px;
+            color: #64748b;
+            font-size: 0.9rem;
+            border-top: 1px solid #e9edf2;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        @media (max-width: 700px) {
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+            .navbar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .nav-links {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            .hero-stats {
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 导航 -->
+        <nav class="navbar">
+            <div class="logo-area">
+                <div class="logo-icon">青罗</div>
+                <div class="logo-text">Chilo <span>· 地图</span></div>
+            </div>
+            <div class="nav-links">
+                <a href="#features">特性</a>
+                <a href="#install">安装</a>
+                <a href="#resources">资源</a>
+                <a href="https://github.com/qmjy/Chilo" target="_blank" class="btn-ghost">GitHub</a>
+                <a href="https://github.com/qmjy/Chilo/releases" target="_blank" class="btn-primary">下载</a>
+            </div>
+        </nav>
+
+        <!-- Hero -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">🌿 开源 · 轻量级地图服务</div>
+                <h1>
+                    江作<em>青罗</em>带，<br>
+                    山如碧玉簪
+                </h1>
+                <p>
+                    青罗地图 (Chilo) 为私有化地图部署提供完整解决方案，<br>
+                    支持离线瓦片、地理逆编码、路径规划与POI搜索。
+                </p>
+                <div class="hero-actions">
+                    <a href="https://github.com/qmjy/Chilo" target="_blank" class="btn-primary" style="padding: 10px 32px;">GitHub 仓库</a>
+                    <a href="#install" style="color: #2d6a4f; font-weight: 500;">快速开始 →</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat-item"><span class="stat-number">mbtiles</span><span class="stat-label">离线瓦片</span></div>
+                    <div class="stat-item"><span class="stat-number">tpk</span><span class="stat-label">紧凑包</span></div>
+                    <div class="stat-item"><span class="stat-number">OSM</span><span class="stat-label">PBF / POI</span></div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-visual-inner">
+                    <h3>🗺️ 青罗 · 地图服务</h3>
+                    <p>localhost:10101 即刻体验</p>
+                    <div class="code-snippet">java -jar Chilo-xxx.jar --dataPath="your/data"</div>
+                    <p style="margin-top: 12px; font-size: 0.8rem; opacity: 0.7;">支持 WGS84 / CGCS2000</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 特性总览 -->
+        <div id="features">
+            <h2 class="section-title">核心能力</h2>
+            <p class="section-sub">开箱即用的地图服务，为离线场景与私有化部署而生</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card"><div class="feature-icon">📦</div><h3>离线瓦片服务</h3><p>mbtiles / tpk 格式支持，MVT(pbf) 元数据查看</p><span class="feature-tag">底图切片</span></div>
+            <div class="feature-card"><div class="feature-icon">📍</div><h3>地理逆编码</h3><p>坐标转地址，支持国际化与行政区划查询</p><span class="feature-tag">逆地理</span></div>
+            <div class="feature-card"><div class="feature-icon">🧭</div><h3>路径规划</h3><p>基于 OSM 数据的路线计算</p><span class="feature-tag">路线</span></div>
+            <div class="feature-card"><div class="feature-icon">🔍</div><h3>POI 搜索</h3><p>离线兴趣点检索，灵活可定制</p><span class="feature-tag">搜索</span></div>
+            <div class="feature-card"><div class="feature-icon">🖼️</div><h3>静态地图</h3><p>生成静态地图图片 (开发中)</p><span class="feature-tag">🏃 进行中</span></div>
+            <div class="feature-card"><div class="feature-icon">🗺️</div><h3>行政区划</h3><p>全球级联数据与边界查询，国际化支持</p><span class="feature-tag">边界</span></div>
+        </div>
+
+        <!-- 支持矩阵 -->
+        <div style="margin: 24px 0 8px;">
+            <h3 style="font-weight: 600; font-size: 1.3rem;">数据格式支持</h3>
+        </div>
+        <div class="support-matrix">
+            <table class="matrix-table">
+                <thead><tr><th>能力</th><th>mbtiles</th><th>tpk</th><th>osm.pbf</th><th>OSMB (geojson)</th><th>osm.poi</th></tr></thead>
+                <tbody>
+                    <tr><td>底图切片</td><td class="check">✅</td><td class="check">✅</td><td>—</td><td>—</td><td>—</td></tr>
+                    <tr><td>地理逆编码</td><td>—</td><td>—</td><td>—</td><td>✅</td><td>—</td></tr>
+                    <tr><td>路径规划</td><td>—</td><td>—</td><td>✅</td><td>—</td><td>—</td></tr>
+                    <tr><td>POI 搜索</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✅</td></tr>
+                    <tr><td>静态地图</td><td class="wip">🏃</td><td class="wip">🏃</td><td class="wip">🏃</td><td class="wip">🏃</td><td class="wip">🏃</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 安装与资源 -->
+        <div id="install" class="install-section">
+            <h2>⚡ 快速安装</h2>
+            <p style="color: #475569; margin-bottom: 12px;">确保已安装 Git, JDK 21, Maven</p>
+            <div class="code-block">
+                git clone git@github.com:qmjy/Chilo.git<br>
+                cd Chilo<br>
+                mvn clean package
+            </div>
+            <p style="margin: 8px 0 4px; font-weight: 500;">启动服务</p>
+            <div class="code-block">
+                cd target<br>
+                java -jar Chilo-xxx.jar --dataPath="你的数据目录"
+            </div>
+            <div style="background: #f0f6f3; padding: 8px 16px; border-radius: 30px; display: inline-block; margin-top: 12px; font-size: 0.9rem;">
+                🌐 访问 <strong>http://localhost:10101</strong> 查看系统页面
+            </div>
+            <div style="margin-top: 20px;">
+                <p style="font-weight: 500;">资源目录结构示例</p>
+                <div class="code-block" style="background: #0f172a; font-size: 0.8rem;">
+                    data/<br>
+                    ├── assets/ (fonts, sprites)<br>
+                    ├── styles/ (world.json)<br>
+                    ├── poi/ (xxx.osm.poi)<br>
+                    ├── osm.pbf/ (Chengdu.osm.pbf)<br>
+                    ├── gpkg/ (chengdu.gpkg)<br>
+                    ├── tilesets/ (Chengdu.mbtiles, .tpk)<br>
+                    └── OSMB/ (China.geojson)
+                </div>
+            </div>
+        </div>
+
+        <!-- 资源下载 -->
+        <div id="resources">
+            <h2 class="section-title">📦 数据资源</h2>
+            <p class="section-sub">示例瓦片数据与风格资源，快速开始你的地图项目</p>
+            <div class="resource-links">
+                <a href="https://cloud.189.cn/web/share?code=iMzYNvfiEbIb" target="_blank">河北省 (250128) </a>
+                <a href="https://cloud.189.cn/web/share?code=VrmEFbiQRn6n" target="_blank">四川省 (240818) </a>
+                <a href="https://cloud.189.cn/web/share?code=jERjmaNFNRVv" target="_blank">广西省 (241025) </a>
+                <a href="https://cloud.189.cn/web/share?code=qaqi227NnAJj" target="_blank">中国 (240127) </a>
+            </div>
+            <div style="margin: 16px 0 0;">
+                <span style="background: #eef3f0; padding: 4px 14px; border-radius: 30px; font-size: 0.85rem;">🎨 地图主题: <a href="https://github.com/teamapps-org/maplibre-gl-styles" target="_blank" style="color: #1f4f3a;">Maplibre 风格</a></span>
+                <span style="background: #eef3f0; padding: 4px 14px; border-radius: 30px; font-size: 0.85rem; margin-left: 8px;">🗺️ VersaTiles 风格</span>
+            </div>
+            <p style="margin-top: 20px; color: #475569;">更多数据或定制需求，请通过 <a href="https://github.com/qmjy/Chilo/issues" target="_blank" style="color: #2d6a4f;">issue</a> 反馈。</p>
+        </div>
+
+        <!-- 社交 & 社区 -->
+        <div class="social-section">
+            <div>
+                <span style="font-weight: 600; font-size: 1.2rem;">💬 社区</span>
+            </div>
+            <div class="social-links">
+                <a href="https://github.com/qmjy/Chilo" target="_blank">GitHub</a>
+                <a href="#" style="cursor: default;">QQ群: 1005408393</a>
+                <a href="https://github.com/qmjy/Chilo/issues" target="_blank">提交 Issue</a>
+            </div>
+        </div>
+
+        <!-- 页脚 -->
+        <footer class="footer">
+            <span>© 2026 青罗地图 · Chilo 开源项目</span>
+            <span>基于 MIT 协议 · 由 <a href="https://github.com/qmjy" target="_blank" style="color: #2d6a4f;">qmjy</a> 维护</span>
+        </footer>
+    </div>
+</body>
+</html>
